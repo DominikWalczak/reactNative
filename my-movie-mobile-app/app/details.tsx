@@ -1,8 +1,8 @@
-import { Text, View, StyleSheet, Image, ScrollView} from "react-native";
+import { Text, View, StyleSheet, Image, ScrollView, Pressable} from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-
+import { PressableOpacity } from 'react-native-pressable-opacity';
 
 export default function Details() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
@@ -43,6 +43,9 @@ export default function Details() {
           <Image style={styles.movieImage} source={{uri: data.Poster}}/>
         </View>
         <View style={styles.movieView}>
+          <PressableOpacity activeOpacity={0.6}>
+            <Text>Dodaj do obejrzenia</Text>
+          </PressableOpacity>
           <View style={styles.movieView2}>
             <View>
               <Text style={styles.movieViewText2}>Year: {data.Year}</Text>
