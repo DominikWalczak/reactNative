@@ -27,6 +27,10 @@ export default function Details() {
     return json || [];
   }
 
+  function addMovieToWatch(){
+    
+  }
+
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ["movie", imdbID],
     queryFn: () => renderMovie(imdbID),
@@ -43,7 +47,7 @@ export default function Details() {
           <Image style={styles.movieImage} source={{uri: data.Poster}}/>
         </View>
         <View style={styles.movieView}>
-          <PressableOpacity activeOpacity={0.6}>
+          <PressableOpacity onPress={() => addMovieToWatch()} activeOpacity={0.6}>
             <Text>Dodaj do obejrzenia</Text>
           </PressableOpacity>
           <View style={styles.movieView2}>
