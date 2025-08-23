@@ -24,6 +24,22 @@ export default function RootLayout() {
           )
         }}
       />
+      <Tabs.Screen
+        name="list"
+        options={{
+          title: "List",
+          headerShown: false,
+          tabBarIcon: ({focused}) => (
+            <>
+              <ImageBackground>
+                <Image source={require("../../assets/images/save.png")}/>
+              </ImageBackground>
+            </>
+          )
+        }}
+      
+      
+      />
     </Tabs>
   );
 }

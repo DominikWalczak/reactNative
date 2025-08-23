@@ -1,10 +1,10 @@
 import * as SQLite from "expo-sqlite";
 import { useEffect } from "react";
 
-const db = SQLite.openDatabaseSync("movies.db");
+const db = (SQLite as any).openDatabase("movies.db");
 
 useEffect(() => {
-  db.transaction((tx: SQLite.SQLTransaction) => {
+  db.transaction((tx: any) => {
     tx.executeSql(`CREATE TABLE IF NOT EXISTS movie_watched (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       movie_id TEXT NOT NULL
