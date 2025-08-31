@@ -3,7 +3,8 @@ import { Searchbar } from "react-native-paper";
 import { router } from "expo-router";
 import { useState, useEffect } from "react";
 import { useQuery } from '@tanstack/react-query';
-
+import Constants from 'expo-constants';
+import RenderList from "../RenderList";
 
 export default function Index() {
 
@@ -22,9 +23,12 @@ export default function Index() {
   //       console.error(error);
   //     });
   // }
+
+ const { API_KEY } = Constants.expoConfig.extra;
+
   async function fetchMovies(search: string){
     if (!search) return [];
-    const response = await fetch(`https://www.omdbapi.com/?apikey=7cb38510&s=${search}`)
+    const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${search}&api_key=${API_KEY}&page=2`)
     const json = await response.json();
     return json.Search || [];
   }
@@ -62,21 +66,7 @@ export default function Index() {
       {isLoading && <Text style={{ textAlign: "center", marginTop: 20 }}>Loading...</Text>}
       {isError && <Text style={{ textAlign: "center", marginTop: 20 }}>Error loading data.</Text>}
 
-      <FlatList 
-        contentContainerStyle={styles.movie}
-        data={data}
-        keyExtractor={(item) => item.imdbID}
-        renderItem={({ item }) => (
-          <Pressable style={styles.movieItem} onPress={() => handleRedirect(item.imdbID)}>
-            <Image style={styles.movieItemImage} source={{uri: item.Poster}}/>
-            <View style={styles.movieItemView}>
-              <Text style={styles.movieItemViewTitle}>Title: {item.Title}</Text>
-              <Text style={styles.movieItemViewYear}>Year: {item.Year}</Text>
-              <Text style={styles.movieItemViewYear}>imdbID: {item.imdbID}</Text>
-            </View>
-          </Pressable>
-        )}
-      />
+      <RenderList data={data}/>
     </View>
   );
 
