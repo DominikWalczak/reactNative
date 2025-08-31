@@ -28,9 +28,9 @@ export default function Index() {
 
   async function fetchMovies(search: string){
     if (!search) return [];
-    const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${search}&api_key=${API_KEY}&page=2`)
+    const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}&api_key=${API_KEY}`)
     const json = await response.json();
-    return json.Search || [];
+    return json.results || [];
   }
   function handleResultChange(text: string){
     setResult(text)
@@ -92,39 +92,5 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 35,
     backgroundColor: "#8856a7",
-  },
-  movieItem: {
-    display: "flex",
-    flexDirection: "row",
-    height: 200,
-    marginTop: 10,
-    marginLeft: 10,
-    marginRight: 10,
-    borderRadius: 30,
-    overflow: "hidden",
-    backgroundColor: "#e0ecf4",   
-    shadowColor: '#000',      
-    shadowOffset: { width: 0, height: 2 }, 
-    shadowOpacity: 1,          
-    shadowRadius: 4,           
-    elevation: 5,         
-  },
-  movieItemImage: {
-    height: 200,
-    width: 120,
-  },
-  movie: {
-    paddingBottom: 20,
-  },
-  movieItemView: {
-    padding: 10,
-  },
-  movieItemViewTitle: {
-    width: 200,
-    fontSize: 22,
-    marginBottom: 10,
-  },
-  movieItemViewYear: {
-
   },
 });
