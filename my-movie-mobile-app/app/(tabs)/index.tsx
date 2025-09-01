@@ -28,7 +28,7 @@ export default function Index() {
 
   async function fetchMovies(search: string){
     if (!search) return [];
-    const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}&api_key=${API_KEY}`)
+    const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}&api_key=${API_KEY}`);
     const json = await response.json();
     return json.results || [];
   }
@@ -39,12 +39,12 @@ export default function Index() {
     refetch();
   }
 
-  function handleRedirect(id: string){
-    router.push({
-      pathname: "/details",
-      params: { imdbID: id},
-    })
-  }
+  // function handleRedirect(id: string){
+  //   router.push({
+  //     pathname: "/details",
+  //     params: { imdbID: id},
+  //   })
+  // }
   const { data, isLoading, isError, refetch} = useQuery({
     queryKey: ["movies", result],
     queryFn: () => fetchMovies(result),

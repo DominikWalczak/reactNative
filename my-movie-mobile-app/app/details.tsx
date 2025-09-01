@@ -3,6 +3,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PressableOpacity } from 'react-native-pressable-opacity';
+import Constants from 'expo-constants';
 
 export default function Details() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
@@ -19,10 +20,12 @@ export default function Details() {
   //     });
   // }, [imdbID]);
 
+  const { API_KEY } = Constants.expoConfig.extra;
+
   async function renderMovie(search: string) {
     if (!imdbID) return;
 
-    const response = await fetch(`https://www.omdbapi.com/?apikey=7cb38510&i=${search}`)
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${imdbID}?api_key=${API_KEY}&language=en-US`);
     const json = await response.json();
     return json || [];
   }
@@ -42,9 +45,9 @@ export default function Details() {
   }
   return (
     <ScrollView style={styles.view}>
-        <Text style={styles.movieText}>{data.Title}</Text>
+        <Text style={styles.movieText}>{data.title}</Text>
         <View style={styles.movieImageView}>
-          <Image style={styles.movieImage} source={{uri: data.Poster}}/>
+          <Image style={styles.movieImage} source={{uri: `https://image.tmdb.org/t/p/w500${data.poster_path}`}} alt="No image"/>
         </View>
         <View style={styles.movieView}>
           <PressableOpacity onPress={() => addMovieToWatch()} activeOpacity={0.6}>
@@ -52,20 +55,20 @@ export default function Details() {
           </PressableOpacity>
           <View style={styles.movieView2}>
             <View>
-              <Text style={styles.movieViewText2}>Year: {data.Year}</Text>
-              <Text style={styles.movieViewText2}>Runtime: {data.Runtime}</Text>
+              <Text style={styles.movieViewText2}>Year: {data.release_date}</Text>
+              {/* <Text style={styles.movieViewText2}>Runtime: {data.Runtime}</Text> */}
             </View>
             <View>
               <Text style={styles.movieViewText2}>imdbID: {imdbID}</Text>
-              <Text style={styles.movieViewText2}>Ratings: {data.Ratings[0].Value}</Text>
+              <Text style={styles.movieViewText2}>Ratings: {data.vote_average}</Text>
             </View>
           </View>
-          <Text style={styles.movieViewText}>{data.Plot}</Text>
-          <Text style={styles.movieViewText2}>Genre: {data.Genre}</Text>
+          <Text style={styles.movieViewText}>{data.overview}</Text>
+          {/* <Text style={styles.movieViewText2}>Genre: {data.Genre}</Text>
           <Text style={styles.movieViewText2}>Director: {data.Director}</Text>
           <Text style={styles.movieViewText2}>Actors: {data.Actors}</Text>
-          <Text style={styles.movieViewText2}>Country: {data.Country}</Text>
-          <Text style={styles.movieViewText2}>Awards: {data.Awards}</Text>
+          <Text style={styles.movieViewText2}>Country: {data.origin_country}</Text>
+          <Text style={styles.movieViewText2}>Awards: {data.Awards}</Text> */}
         </View>
     </ScrollView>
   );
