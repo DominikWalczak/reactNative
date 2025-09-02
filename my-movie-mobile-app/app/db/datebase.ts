@@ -5,11 +5,11 @@ export const db = (SQLite as any).openDatabaseSync("movies.db");
 
 export default function DateBase(){
   useEffect(() => {
-     const dbSet = async () => await db.withTransactionAsync(async (tx) => {
+     const dbSet = async () => await db.withTransactionAsync(async (tx: any) => {
       await tx.executeSqlAsync(
         `CREATE TABLE IF NOT EXISTS movie_list (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        watched BOOLEAN
+        watched BOOLEAN,
         movie_id TEXT NOT NULL
       );`);
 
@@ -22,6 +22,7 @@ export default function DateBase(){
         FOREIGN KEY(movie_id) REFERENCES movie_list(id)
       );`);
     });
+    dbSet();
   }, []);
 
 
