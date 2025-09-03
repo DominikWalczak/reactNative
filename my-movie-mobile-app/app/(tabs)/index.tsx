@@ -9,21 +9,6 @@ import RenderList from "../RenderList";
 export default function Index() {
 
   const [result, setResult] = useState("");
-
-  // useEffect(() =>{
-  //   handleLoopPress();
-  // }, []);
-  // function handleLoopPress(){
-  //   fetch(`https://www.omdbapi.com/?apikey=7cb38510&s=${result}`)
-  //     .then(response => response.json())
-  //     .then(json => {
-  //       setData(json.Search);
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //     });
-  // }
-
  const { API_KEY } = Constants.expoConfig.extra;
 
   async function fetchMovies(search: string){
@@ -38,13 +23,6 @@ export default function Index() {
   function handleLoopPress(){
     refetch();
   }
-
-  // function handleRedirect(id: string){
-  //   router.push({
-  //     pathname: "/details",
-  //     params: { imdbID: id},
-  //   })
-  // }
   const { data, isLoading, isError, refetch} = useQuery({
     queryKey: ["movies", result],
     queryFn: () => fetchMovies(result),

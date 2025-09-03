@@ -1,9 +1,8 @@
 import * as SQLite from "expo-sqlite";
 import { useEffect } from "react";
+import { useState } from "react";
 
 export const db = (SQLite as any).openDatabaseSync("movies.db");
-
-await db.execAsync("PRAGMA foreign_keys = ON;");
 
 export async function insertMovie(id: number){
   await db.withTransactionAsync(async (tx: any) => {
@@ -21,6 +20,22 @@ export async function insertOpinion(movie: any){
     );
   });
 }
+export async function deleteOpinion(id: number){
+  await db.withTransactionAsync(async (tx: any) => {
+    await tx.executeSqlAsync(
+      "DELETE FROM movie_opinion WHERE opinion_id=?",
+      [id]
+    );
+  });
+}
+export async function deleteMovie(id: number){
+  await db.withTransactionAsync(async (tx: any) => {
+    await tx.executeSqlAsync(
+      "DELETE FROM movie_list WHERE id=?",
+      [id]
+    );
+  });
+}
 export async function changeToWatched(id: number){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
@@ -29,9 +44,24 @@ export async function changeToWatched(id: number){
     );
   });
 }
+export async function changeOpinion(movie: any){
+  await db.withTransactionAsync(async (tx: any) => {
+    await tx.executeSqlAsync(
+      "UPDATE movie_opinion SET (opinion_rate, movie_id, opinion_title, opinion_desc) VALUES(?, ?, ?, ?) WHERE id= ?",
+      [movie.opinion_rate, movie.id, movie.opinion_title, movie.opinion_desc]
+    );
+  });
+}
+export async function loadMovies() {
+  return await db.withTransactionAsync(async (tx: any) => {
+    const result = await tx.executeSqlAsync("SELECT * FROM movie_list");
+    return result.rows as any[];
+  });
+}
+
 export default function DateBase(){
   useEffect(() => {
-     const dbSet = async () => await db.withTransactionAsync(async (tx: any) => {
+     const dbSet = async () => await db.withTransactionWAsync(async (tx: any) => {
       await tx.executeSqlAsync(
         `CREATE TABLE IF NOT EXISTS movie_list (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,9 +75,11 @@ export default function DateBase(){
         movie_id INTEGER NOT NULL,
         opinion_title TEXT NOT NULL,
         opinion_desc TEXT NOT NULL,
-        date_watched, DATE NOT NULL,
+        date_watched DATE NOT NULL,
         FOREIGN KEY(movie_id) REFERENCES movie_list(id)
       );`);
+
+      await db.execAsync("PRAGMA foreign_keys = ON;");
     });
     dbSet();
   }, []);

@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, FlatList, Image, Pressable} from "react-native";
-import { useState } from "react";
-import { db } from "../db/datebase";
+import { useState, useEffect } from "react";
+import { loadMovies } from "../db/datebase";
 import RenderList from "../RenderList";
 import { useQuery } from '@tanstack/react-query';
 import Constants from 'expo-constants';
@@ -15,11 +15,19 @@ interface Movie {
 export default function List(){
     const [watched, setWatched] = useState(false);
     const [dateBase, setDateBase] = useState<Movie[]>([]);
+    const [dBase, setdBase] = useState<any[]>([]);
     const [id, setId] = useState(0);
     function handleWatchedChange(){
         setWatched(!watched);
     }
-
+    useEffect(() =>{
+        const f = async () =>{
+            const movies = await loadMovies();
+            setdBase(movies);
+        };
+        f();
+        setList();
+    }, []);
     const { API_KEY } = Constants.expoConfig.extra;
 
     async function renderMovie(search: number) {
@@ -33,31 +41,24 @@ export default function List(){
         queryFn: () => renderMovie(id),
         enabled: false,
     });
-    function watchedOrToWatch(){
-        if(watched){
-            // setDb(); watched
-        }
-        else{
-            // setDb(); to watch
-        }
+    function setList(){
+        dBase.map((item: any) =>{
+            if(watched){
+                if(item.watched){
+                    setId(item.movie_id);
+                    refetch();
+                    setDateBase((m) => [...m, data]);
+                }
+            }
+            else{
+                if(!item.watched){
+                    setId(item.movie_id);
+                    refetch();
+                    setDateBase((m) => [...m, data]);
+                }
+            }
+        });
     }
-    
-    db.map((item: any) =>{
-        if(watched){
-            if(item.watched){
-                setId(item.movie_id)
-                refetch();
-                setDateBase((m) => [...m, data]);
-            }
-        }
-        else{
-            if(!item.watched){
-                setId(item.movie_id)
-                refetch();
-                setDateBase((m) => [...m, data]);
-            }
-        }
-    });
     return(
         <View style={styles.view}>
             <Pressable onPress={() => handleWatchedChange()}><Text style={styles.changeBtnd}>{watched ? "Obejrzane" : "Do obejrzenia"}</Text></Pressable>

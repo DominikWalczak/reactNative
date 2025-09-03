@@ -8,18 +8,6 @@ import db from './db/datebase';
 
 export default function Details() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
-  // useEffect(() => {
-  //   if (!imdbID) return;
-
-  //   fetch(`https://www.omdbapi.com/?apikey=7cb38510&i=${imdbID}`)
-  //     .then(response => response.json())
-  //     .then(json => {
-  //       setData(json);
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //     });
-  // }, [imdbID]);
 
   const { API_KEY } = Constants.expoConfig.extra;
 
