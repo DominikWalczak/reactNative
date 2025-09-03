@@ -24,14 +24,16 @@ export default function Details() {
   const { API_KEY } = Constants.expoConfig.extra;
 
   async function renderMovie(search: string) {
-    if (!imdbID) return;
+    if (!search) return;
 
-    const response = await fetch(`https://api.themoviedb.org/3/movie/${imdbID}?api_key=${API_KEY}&language=en-US&append_to_response=credits`);
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${search}?api_key=${API_KEY}&language=en-US&append_to_response=credits`);
     const json = await response.json();
     return json || [];
   }
   function addMovieToWatch(){
-    
+    // db.transaction(tx => {
+    //   tx.executeSql('')
+    // });
   }
 
   const {data, isLoading, isError, refetch} = useQuery({
@@ -99,7 +101,7 @@ const styles = StyleSheet.create({
   },
   movieImageView: {
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   movieImage: {
     height: 400,

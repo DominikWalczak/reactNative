@@ -1,15 +1,38 @@
 import { Text, View, StyleSheet, FlatList, Image, Pressable} from "react-native";
 import { useState } from "react";
-import db from "../db/datebase";
+import { db } from "../db/datebase";
 import RenderList from "../RenderList";
+import { useQuery } from '@tanstack/react-query';
+import Constants from 'expo-constants';
+
+interface Movie {
+  id: number;
+  title: string;
+  release_date?: string; 
+  poster_path: string | null;
+}
 
 export default function List(){
     const [watched, setWatched] = useState(false);
-    const [db, setDb] = useState();
+    const [dateBase, setDateBase] = useState<Movie[]>([]);
+    const [id, setId] = useState(0);
     function handleWatchedChange(){
         setWatched(!watched);
     }
 
+    const { API_KEY } = Constants.expoConfig.extra;
+
+    async function renderMovie(search: number) {
+        if (!search) return [];
+        const response = await fetch(`https://api.themoviedb.org/3/movie/${search}?api_key=${API_KEY}&language=en-US`);
+        const json = await response.json();
+        return json.results || [];
+    }
+    const { data, isLoading, isError, refetch} = useQuery({
+        queryKey: ["movie", id],
+        queryFn: () => renderMovie(id),
+        enabled: false,
+    });
     function watchedOrToWatch(){
         if(watched){
             // setDb(); watched
@@ -18,11 +41,27 @@ export default function List(){
             // setDb(); to watch
         }
     }
-
+    
+    db.map((item: any) =>{
+        if(watched){
+            if(item.watched){
+                setId(item.movie_id)
+                refetch();
+                setDateBase((m) => [...m, data]);
+            }
+        }
+        else{
+            if(!item.watched){
+                setId(item.movie_id)
+                refetch();
+                setDateBase((m) => [...m, data]);
+            }
+        }
+    });
     return(
         <View style={styles.view}>
             <Pressable onPress={() => handleWatchedChange()}><Text style={styles.changeBtnd}>{watched ? "Obejrzane" : "Do obejrzenia"}</Text></Pressable>
-            {/* <RenderList data={data}/> ustawić bramkę logiczną rodzielającą watched/toWatch */}
+            <RenderList data={dateBase}/>
         </View>
     )
 }

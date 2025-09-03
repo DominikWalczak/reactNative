@@ -1,1 +1,2 @@
-Wyciągnąć FlatList do komponentu
+zaimplementować funkcje z datebase i usunąć zbędne importy db
+zrobić do obejrzenia/obejrzane do końca, następnie ekran do recenzji
