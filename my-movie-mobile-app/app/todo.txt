@@ -1,4 +1,2 @@
-usunąć zbędne importy db
-zrobić do obejrzenia/obejrzane do końca, następnie ekran do recenzji
-
-poprawić zod/numer/rating w opinion
+dokończyć w opinion walidacje
+dokończyć list

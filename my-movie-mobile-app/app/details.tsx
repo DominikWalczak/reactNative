@@ -76,11 +76,11 @@ export default function Details() {
         <View style={styles.movieView}>
           <View style={styles.movieButtons}>
             <PressableOpacity onPress={() => addMovieToWatch()} activeOpacity={0.6}>
-            <Text style={styles.addMov}>{inList ? "Obejrzane? Dodaj recenzje!" : "Dodaj do obejrzenia"}</Text>
+            <Text style={styles.addMov}>{inList ? "Watched? Add opinion!" : "Add to watch list"}</Text>
             </PressableOpacity>
             {inList &&           
             <PressableOpacity onPress={() => deleteMovieToWatch()} activeOpacity={0.6}>
-              <Text style={styles.addMov}>Usuń z listy</Text>
+              <Text style={styles.addMov}>Delete from the list</Text>
             </PressableOpacity>}
           </View>
           <View style={styles.movieView2}>

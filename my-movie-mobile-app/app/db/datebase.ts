@@ -48,7 +48,7 @@ export async function changeOpinion(movie: any){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
       "UPDATE movie_opinion SET (opinion_rate, movie_id, opinion_title, opinion_desc) VALUES(?, ?, ?, ?) WHERE id= ?",
-      [movie.opinion_rate, movie.id, movie.opinion_title, movie.opinion_desc]
+      [movie.rate, movie.id, movie.title, movie.desc]
     );
   });
 }
