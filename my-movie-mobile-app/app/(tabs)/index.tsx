@@ -9,7 +9,7 @@ import RenderList from "../RenderList";
 export default function Index() {
 
   const [result, setResult] = useState("");
- const { API_KEY } = Constants.expoConfig.extra;
+  const { API_KEY } = Constants.expoConfig.extra;
 
   async function fetchMovies(search: string){
     if (!search) return [];
@@ -18,7 +18,7 @@ export default function Index() {
     return json.results || [];
   }
   function handleResultChange(text: string){
-    setResult(text)
+    setResult(text);
   }
   function handleLoopPress(){
     refetch();

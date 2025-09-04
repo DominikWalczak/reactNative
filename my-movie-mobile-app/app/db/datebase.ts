@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export const db = (SQLite as any).openDatabaseSync("movies.db");
 
-export async function insertMovie(id: number){
+export async function insertMovie(id: string){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
       "INSERT INTO movie_list (movie_id) VALUES(?)", 
@@ -15,12 +15,12 @@ export async function insertMovie(id: number){
 export async function insertOpinion(movie: any){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
-      "INSERT INTO movie_opinion (opinion_rate, movie_id, opinion_title, opinion_desc) VALUES(?, ?, ?, ?)", 
+      "INSERT INTO movie_opinion (opinion_rate, movie_id, opinion_title, opinion_desc, date_watched) VALUES(?, ?, ?, ?, CURRENT_DATE)", 
       [movie.opinion_rate, movie.id, movie.opinion_title, movie.opinion_desc]
     );
   });
 }
-export async function deleteOpinion(id: number){
+export async function deleteOpinion(id: string){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
       "DELETE FROM movie_opinion WHERE opinion_id=?",
@@ -28,7 +28,7 @@ export async function deleteOpinion(id: number){
     );
   });
 }
-export async function deleteMovie(id: number){
+export async function deleteMovie(id: string){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
       "DELETE FROM movie_list WHERE id=?",
@@ -36,7 +36,7 @@ export async function deleteMovie(id: number){
     );
   });
 }
-export async function changeToWatched(id: number){
+export async function changeToWatched(id: string){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
       "UPDATE movie_list SET watched = NOT watched WHERE id= ?", 
@@ -61,18 +61,18 @@ export async function loadMovies() {
 
 export default function DateBase(){
   useEffect(() => {
-     const dbSet = async () => await db.withTransactionWAsync(async (tx: any) => {
+     const dbSet = async () => await db.withTransactionAsync(async (tx: any) => {
       await tx.executeSqlAsync(
         `CREATE TABLE IF NOT EXISTS movie_list (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         watched BOOLEAN NOT NULL DEFAULT 0,
-        movie_id INTEGER NOT NULL
+        movie_id TEXT NOT NULL
       );`);
 
       await tx.executeSqlAsync(`CREATE TABLE IF NOT EXISTS movie_opinion (
         opinion_id INTEGER PRIMARY KEY AUTOINCREMENT,
         opinion_rate REAL NOT NULL CHECK(opinion_rate >= 1 AND opinion_rate <= 5),
-        movie_id INTEGER NOT NULL,
+        movie_id TEXT NOT NULL,
         opinion_title TEXT NOT NULL,
         opinion_desc TEXT NOT NULL,
         date_watched DATE NOT NULL,

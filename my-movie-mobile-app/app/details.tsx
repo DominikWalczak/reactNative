@@ -1,16 +1,22 @@
 import { Text, View, StyleSheet, Image, ScrollView, Pressable} from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import Constants from 'expo-constants';
-import db from './db/datebase';
+import { z } from "zod";
+import { deleteMovie, insertMovie, loadMovies } from './db/datebase';
 
 export default function Details() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
+  const [dateBase, setDateBase] = useState<any[]>([]);
+  const [element, setElement] = useState({});
+  const [inList, setInList] = useState(true);
 
-  const { API_KEY } = Constants.expoConfig.extra;
-
+  const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
+  useEffect(() =>{
+    renderDateBase();
+  }, []);
   async function renderMovie(search: string) {
     if (!search) return;
 
@@ -18,12 +24,34 @@ export default function Details() {
     const json = await response.json();
     return json || [];
   }
-  function addMovieToWatch(){
-    // db.transaction(tx => {
-    //   tx.executeSql('')
-    // });
+  async function addMovieToWatch(){
+    if(false){ //imdbID !== element.movie_id
+      console.log("Adding movie:", imdbID);
+      await insertMovie(imdbID);
+      await renderDateBase();
+      console.log("Movie added, reloaded db");
+    }
+    else{
+      router.push({
+        pathname: "/opinion",
+        params: { imdbID: imdbID},
+      });
+    }    
   }
-
+  async function deleteMovieToWatch(){
+    if(imdbID === element.movie_id){
+      await deleteMovie(imdbID);
+    }
+  }
+  async function renderDateBase(){
+    console.log("Adding movie235:", imdbID);
+    const res = await loadMovies();
+    console.log("Adding movie3:", imdbID);
+    setDateBase(res);
+    const found = res.find((ele: any) => ele.movie_id === imdbID);
+    setElement(found ?? {});
+    setInList(Boolean(found));
+  }
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ["movie", imdbID],
     queryFn: () => renderMovie(imdbID),
@@ -31,7 +59,7 @@ export default function Details() {
   });
 
 
-  if(!data){
+  if(!data && !dateBase.length){
     return <Text>Loading...</Text>
   }
   const topActors = data.credits?.cast
@@ -46,9 +74,15 @@ export default function Details() {
           <Image style={styles.movieImage} source={{uri: `https://image.tmdb.org/t/p/w500${data.poster_path}`}} alt="No image"/>
         </View>
         <View style={styles.movieView}>
-          <PressableOpacity onPress={() => addMovieToWatch()} activeOpacity={0.6}>
-            <Text style={styles.addMov}>Dodaj do obejrzenia</Text>
-          </PressableOpacity>
+          <View style={styles.movieButtons}>
+            <PressableOpacity onPress={() => addMovieToWatch()} activeOpacity={0.6}>
+            <Text style={styles.addMov}>{inList ? "Obejrzane? Dodaj recenzje!" : "Dodaj do obejrzenia"}</Text>
+            </PressableOpacity>
+            {inList &&           
+            <PressableOpacity onPress={() => deleteMovieToWatch()} activeOpacity={0.6}>
+              <Text style={styles.addMov}>Usuń z listy</Text>
+            </PressableOpacity>}
+          </View>
           <View style={styles.movieView2}>
             <View>
               <Text style={styles.movieViewText2}>Year: {data.release_date}</Text>
@@ -77,7 +111,6 @@ const styles = StyleSheet.create({
   addMov: {
     padding: 10,
     backgroundColor: "#8856a7",
-    width: "50%",
     borderRadius: 40,
     shadowOffset: { width: 0, height: 2 }, 
     shadowOpacity: 1,          
@@ -137,4 +170,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 5, 
   },
+  movieButtons:{
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  }
 });

@@ -28,7 +28,7 @@ export default function List(){
         f();
         setList();
     }, []);
-    const { API_KEY } = Constants.expoConfig.extra;
+    const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
 
     async function renderMovie(search: number) {
         if (!search) return [];
