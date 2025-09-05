@@ -4,16 +4,17 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import Constants from 'expo-constants';
-import { z } from "zod";
-import { deleteMovie, insertMovie, loadMovies } from './db/datebase';
+import { deleteMovie, insertMovie, loadMovies, loadMoviesAndOpinions } from './db/datebase';
 
 export default function Details() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
   const [dateBase, setDateBase] = useState<any[]>([]);
   const [element, setElement] = useState({});
   const [inList, setInList] = useState(true);
+  const [isOpinion, setIsOpinion] = useState(true);
 
   const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
+  
   useEffect(() =>{
     renderDateBase();
   }, []);
@@ -25,16 +26,14 @@ export default function Details() {
     return json || [];
   }
   async function addMovieToWatch(){
-    if(false){ //imdbID !== element.movie_id
-      console.log("Adding movie:", imdbID);
+    if(false){ //imdbID !== elment.movie_id
       await insertMovie(imdbID);
       await renderDateBase();
-      console.log("Movie added, reloaded db");
     }
     else{
       router.push({
         pathname: "/opinion",
-        params: { imdbID: imdbID},
+        params: { imdbID: imdbID, isOpinion: isOpinion ? "1" : "0"},
       });
     }    
   }
@@ -44,13 +43,16 @@ export default function Details() {
     }
   }
   async function renderDateBase(){
-    console.log("Adding movie235:", imdbID);
     const res = await loadMovies();
-    console.log("Adding movie3:", imdbID);
     setDateBase(res);
     const found = res.find((ele: any) => ele.movie_id === imdbID);
     setElement(found ?? {});
     setInList(Boolean(found));
+    if(inList){
+      const res2 = await loadMoviesAndOpinions(imdbID);
+      const found2 = res2.find((ele: any) => ele.movie_id === imdbID);
+      setIsOpinion(Boolean(found2));
+    }
   }
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ["movie", imdbID],
@@ -76,7 +78,7 @@ export default function Details() {
         <View style={styles.movieView}>
           <View style={styles.movieButtons}>
             <PressableOpacity onPress={() => addMovieToWatch()} activeOpacity={0.6}>
-            <Text style={styles.addMov}>{inList ? "Watched? Add opinion!" : "Add to watch list"}</Text>
+            <Text style={styles.addMov}>{inList ? ( isOpinion ? "Update your opinion" : "Watched? Add opinion!") : "Add to watch list"}</Text>
             </PressableOpacity>
             {inList &&           
             <PressableOpacity onPress={() => deleteMovieToWatch()} activeOpacity={0.6}>

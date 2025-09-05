@@ -1,6 +1,5 @@
 import * as SQLite from "expo-sqlite";
 import { useEffect } from "react";
-import { useState } from "react";
 
 export const db = (SQLite as any).openDatabaseSync("movies.db");
 
@@ -23,7 +22,7 @@ export async function insertOpinion(movie: any){
 export async function deleteOpinion(id: string){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
-      "DELETE FROM movie_opinion WHERE opinion_id=?",
+      "DELETE FROM movie_opinion WHERE opinion_id = ?",
       [id]
     );
   });
@@ -31,7 +30,7 @@ export async function deleteOpinion(id: string){
 export async function deleteMovie(id: string){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
-      "DELETE FROM movie_list WHERE id=?",
+      "DELETE FROM movie_list WHERE movie_id = ?",
       [id]
     );
   });
@@ -39,7 +38,7 @@ export async function deleteMovie(id: string){
 export async function changeToWatched(id: string){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
-      "UPDATE movie_list SET watched = NOT watched WHERE id= ?", 
+      "UPDATE movie_list SET watched = NOT watched WHERE movie_id = ?", 
       [id]
     );
   });
@@ -47,8 +46,8 @@ export async function changeToWatched(id: string){
 export async function changeOpinion(movie: any){
   await db.withTransactionAsync(async (tx: any) => {
     await tx.executeSqlAsync(
-      "UPDATE movie_opinion SET (opinion_rate, movie_id, opinion_title, opinion_desc) VALUES(?, ?, ?, ?) WHERE id= ?",
-      [movie.rate, movie.id, movie.title, movie.desc]
+      "UPDATE movie_opinion SET (opinion_rate, movie_id, opinion_title, opinion_desc) VALUES(?, ?, ?, ?) WHERE movie_id = ?",
+      [movie.rate, movie.id, movie.title, movie.desc, movie.id]
     );
   });
 }
@@ -56,6 +55,14 @@ export async function loadMovies() {
   return await db.withTransactionAsync(async (tx: any) => {
     const result = await tx.executeSqlAsync("SELECT * FROM movie_list");
     return result.rows as any[];
+  });
+}
+export async function loadMoviesAndOpinions(id: string) {
+  return await db.withTransactionAsync(async (tx: any) => {
+    const result = await tx.executeSqlAsync("SELECT * FROM movie_list LEFT JOIN movie_opinion.movie_id ON movie_list.movie_id WHERE movie_list.movie_id = ?",
+      [id]
+    );
+    return result.rows as any[] || false;
   });
 }
 
@@ -76,7 +83,7 @@ export default function DateBase(){
         opinion_title TEXT NOT NULL,
         opinion_desc TEXT NOT NULL,
         date_watched DATE NOT NULL,
-        FOREIGN KEY(movie_id) REFERENCES movie_list(id)
+        FOREIGN KEY(movie_id) REFERENCES movie_list(movie_id)
       );`);
 
       await db.execAsync("PRAGMA foreign_keys = ON;");

@@ -1,13 +1,13 @@
 import { Text, TextInput, View, StyleSheet, ScrollView, Pressable} from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { useState, useEffect } from "react";
-import { PressableOpacity } from 'react-native-pressable-opacity';
-import Constants from 'expo-constants';
 import { z } from "zod";
-import { deleteMovie, insertMovie, loadMovies } from './db/datebase';
+import { insertOpinion, changeOpinion, loadMoviesAndOpinions } from './db/datebase';
 
 export default function Opinion() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
+  const { isOpinion } = useLocalSearchParams<{isOpinion: string}>();
+  const [dateBase, setDateBase] = useState<any[]>([]);
   const [opinion, setOpinion] = useState({});
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -16,19 +16,45 @@ export default function Opinion() {
   const minMax = z.number().min(1, "Minimum value is 1").max(5, "Maximum value is 5");
   const belowFour = z.number().min(4, "Ratings below 4 need to have opinion and title");
   const textSchema = z.string().trim().min(1, "Cannot be empty");
+
+  useEffect(() => {
+    if(Boolean(isOpinion)){
+      
+    }
+  },[]);
+  async function listCheck() { //dokończyć
+    const re = await loadMoviesAndOpinions(imdbID);
+    return re;
+  }
   function handleButtonPressed(){
     const re1 = belowFour.safeParse(Number(rate));
-
+    const id = imdbID;
     if(re1.success){
-      const id = imdbID;
       setOpinion({rate, id, title, desc});
-      console.log(opinion);
+      if(Boolean(isOpinion)){
+        changeOpinion(opinion);
+        alert("Opinion changed");
+        router.back()
+        return;
+      }
+      insertOpinion(opinion);
+      alert("Opinion added");
+      router.back()
     }
     else{
       const re2 = textSchema.safeParse(title);
       const re3 = textSchema.safeParse(desc);
       if(re2.success && re3.success){
-        console.log(re2.success, re3.success);
+        setOpinion({rate, id, title, desc});
+        if(Boolean(isOpinion)){
+          changeOpinion(opinion);
+          alert("Opinion changed");
+          router.back()
+          return;
+      }
+        insertOpinion(opinion);
+        alert("Opinion added");
+        router.back()
         return;
       }
       alert(re1.error.issues[0].message);
