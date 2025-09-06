@@ -7,7 +7,6 @@ import { insertOpinion, changeOpinion, loadMoviesAndOpinions } from './db/dateba
 export default function Opinion() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
   const { isOpinion } = useLocalSearchParams<{isOpinion: string}>();
-  const [dateBase, setDateBase] = useState<any[]>([]);
   const [opinion, setOpinion] = useState({});
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -17,42 +16,45 @@ export default function Opinion() {
   const belowFour = z.number().min(4, "Ratings below 4 need to have opinion and title");
   const textSchema = z.string().trim().min(1, "Cannot be empty");
 
-  useEffect(() => {
+  useEffect(() => { //useEffect sprawdza czy zaaktualizowano bazę danych i narzuca zmiany do zmiennych title, desc i rate, 
+  // umożliwia to zaczynanie edycji od momentu w którym użytkownik ją zostawił, a nie od początku
     if(Boolean(isOpinion)){
-      
+      listCheck();
     }
   },[]);
-  async function listCheck() { //dokończyć
+  async function listCheck() { //pobieranie istniejącej opinii w celu edycji
     const re = await loadMoviesAndOpinions(imdbID);
-    return re;
+    setTitle(re.opinion_title);
+    setDesc(re.opinion_desc);
+    setRate(re.opinion_rate);
   }
   function handleButtonPressed(){
     const re1 = belowFour.safeParse(Number(rate));
     const id = imdbID;
     if(re1.success){
       setOpinion({rate, id, title, desc});
-      if(Boolean(isOpinion)){
+      if(Boolean(isOpinion)){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
         changeOpinion(opinion);
         alert("Opinion changed");
         router.back()
         return;
       }
-      insertOpinion(opinion);
+      insertOpinion(opinion); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
       alert("Opinion added");
       router.back()
     }
     else{
       const re2 = textSchema.safeParse(title);
       const re3 = textSchema.safeParse(desc);
-      if(re2.success && re3.success){
-        setOpinion({rate, id, title, desc});
-        if(Boolean(isOpinion)){
+      if(re2.success && re3.success){ //weryfikacja czy title i desc są przynajmniej długości 1 znaku
+        setOpinion({rate, id, title, desc}); 
+        if(Boolean(isOpinion)){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
           changeOpinion(opinion);
           alert("Opinion changed");
           router.back()
           return;
       }
-        insertOpinion(opinion);
+        insertOpinion(opinion); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
         alert("Opinion added");
         router.back()
         return;
@@ -61,7 +63,8 @@ export default function Opinion() {
     }
   }
   function handleNumberChange(r: string){
-    if (r === "") {
+    if (r === "") { // jeśli użytkownik usunie wartość z rate to zmienia się ona na pusty string, 
+    // inaczej pusty string był uznawany za wartość poniżej 1 i wstawiano od razu 1 uniemożliwiając skorygowanie ratingu 
       setRate("");
       return;
     }
@@ -69,13 +72,13 @@ export default function Opinion() {
 
     const result = minMax.safeParse(n);
 
-    if (result.success) {
+    if (result.success) { //Jeśli liczba mieści się między 1, a 5 
       setRate(r);
     } else {
       const firstIssue = result.error.issues[0].code;
-      if (firstIssue === "too_big") {
+      if (firstIssue === "too_big") { // jeśli za duży rating, ustaw 5
         setRate("5");
-      } else {
+      } else { // jeśli za mały rating, ustaw 1
         setRate("1");
       }
   }
