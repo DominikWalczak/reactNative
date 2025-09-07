@@ -12,7 +12,8 @@ interface ListProps {
 }
 
 
-export default function RenderList({ data }: ListProps){
+export default function RenderList({ data }: ListProps){ 
+  // komponent generujący listy na podstawie podanych danych który posiada możliwości przekierowania do details
 
     function handleRedirect(id: string){
     router.push({

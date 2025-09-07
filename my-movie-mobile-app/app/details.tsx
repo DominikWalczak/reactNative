@@ -13,9 +13,9 @@ export default function Details() {
   const [inList, setInList] = useState(true);
   const [isOpinion, setIsOpinion] = useState(true);
 
-  const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
+  const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string }; //pobierania klucza API
   
-  useEffect(() =>{
+  useEffect(() =>{ //weryfikacja bazy danych aby sprawdzać zmiany (usuwanie oraz dodawanie do obejrzenia)
     renderDateBase();
   }, []);
   async function renderMovie(search: string) {
@@ -25,30 +25,31 @@ export default function Details() {
     const json = await response.json();
     return json || [];
   }
-  async function addMovieToWatch(){
-    if(false){ //imdbID !== elment.movie_id
+  async function addMovieToWatch(){ 
+    if(imdbID !== element.movie_id){ //weryfikacja czy film nie został już dodany, 
+    // ta część jest powiązana z return komponentu który dostosowuje się do funkcji z else jeśli film został dodany
       await insertMovie(imdbID);
       await renderDateBase();
     }
-    else{
+    else{ // kieruje do opinion
       router.push({
         pathname: "/opinion",
         params: { imdbID: imdbID, isOpinion: isOpinion ? "1" : "0"},
       });
     }    
   }
-  async function deleteMovieToWatch(){
+  async function deleteMovieToWatch(){ //funkcja usuwa film z listy do obejrzenia
     if(imdbID === element.movie_id){
       await deleteMovie(imdbID);
     }
   }
-  async function renderDateBase(){
+  async function renderDateBase(){ // wyczytywanie listy z bazy danych 
     const res = await loadMovies();
     setDateBase(res);
-    const found = res.find((ele: any) => ele.movie_id === imdbID);
+    const found = res.find((ele: any) => ele.movie_id === imdbID); //weryfikacja czy film jest dodany do obejrzenia
     setElement(found ?? {});
     setInList(Boolean(found));
-    if(inList){
+    if(inList){ // Jeśli jest w liście do obejrzenia to zweryfikuj czy istnieje już opinia
       const res2 = await loadMoviesAndOpinions(imdbID);
       const found2 = res2.find((ele: any) => ele.movie_id === imdbID);
       setIsOpinion(Boolean(found2));
@@ -64,7 +65,7 @@ export default function Details() {
   if(!data && !dateBase.length){
     return <Text>Loading...</Text>
   }
-  const topActors = data.credits?.cast
+  const topActors = data.credits?.cast // wybór 5 najważniejszych aktorów
     ?.sort((a: any, b: any) => a.order - b.order)
     .slice(0, 5) || [];
 

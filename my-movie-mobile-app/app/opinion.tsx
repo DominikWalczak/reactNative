@@ -12,9 +12,14 @@ export default function Opinion() {
   const [desc, setDesc] = useState("");
   const [rate, setRate] = useState("");
 
-  const minMax = z.number().min(1, "Minimum value is 1").max(5, "Maximum value is 5");
+  const minMax = z.number().min(1, "Minimum value is 1").max(5, "Maximum value is 5"); 
+  // wybrałem number().min().max() aby móc zweryfikować czy podana wartość znajduje się w przedziale 1-5, 
+  // jeśli nie to na podstawie komunikatów błędów zod poprawiam liczbę do najwyższej/najniższej skrajnej wartości
   const belowFour = z.number().min(4, "Ratings below 4 need to have opinion and title");
+  // wybrałem number().min() aby móc zweryfikować czy rating jest poniżej 4, 
+  // jeśli nie jest to na podstawie komunikatu błędu zod uruchamiana jest część kodu gdzie weryfikowana jest zawartość desc i title
   const textSchema = z.string().trim().min(1, "Cannot be empty");
+  // wybrałem string().trim().min() aby móc zweryfikować czy podany string w desc i title jest pusty oraz czy nie składa się z samych spacji
 
   useEffect(() => { //useEffect sprawdza czy zaaktualizowano bazę danych i narzuca zmiany do zmiennych title, desc i rate, 
   // umożliwia to zaczynanie edycji od momentu w którym użytkownik ją zostawił, a nie od początku
