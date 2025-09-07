@@ -25,6 +25,15 @@ export default function RootLayout() {
             },
           }}
         />
+        <Stack.Screen
+          name="opinion"
+          options={{
+            title: "",
+            headerStyle: {
+              backgroundColor: "#e0ecf4",
+            },
+          }}
+        />
       </Stack>
     </QueryClientProvider>
   );

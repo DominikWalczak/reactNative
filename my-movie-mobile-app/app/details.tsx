@@ -1,64 +1,106 @@
-import { Text, View, StyleSheet, Image, ScrollView} from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { Text, View, StyleSheet, Image, ScrollView, Pressable} from "react-native";
+import { useLocalSearchParams, router } from "expo-router";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-
+import { PressableOpacity } from 'react-native-pressable-opacity';
+import Constants from 'expo-constants';
+import { deleteMovie, insertMovie, loadMovies, loadMoviesAndOpinions } from './db/datebase';
 
 export default function Details() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
-  // useEffect(() => {
-  //   if (!imdbID) return;
+  const [dateBase, setDateBase] = useState<any[]>([]);
+  const [element, setElement] = useState({});
+  const [inList, setInList] = useState(true);
+  const [isOpinion, setIsOpinion] = useState(false);
 
-  //   fetch(`https://www.omdbapi.com/?apikey=7cb38510&i=${imdbID}`)
-  //     .then(response => response.json())
-  //     .then(json => {
-  //       setData(json);
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //     });
-  // }, [imdbID]);
-
+  const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string }; //pobierania klucza API
+  
+  useEffect(() =>{ //weryfikacja bazy danych aby sprawdzać zmiany (usuwanie oraz dodawanie do obejrzenia)
+    renderDateBase();
+  }, []);
   async function renderMovie(search: string) {
-    if (!imdbID) return;
+    if (!search) return;
 
-    const response = await fetch(`https://www.omdbapi.com/?apikey=7cb38510&i=${search}`)
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${search}?api_key=${API_KEY}&language=en-US&append_to_response=credits`);
     const json = await response.json();
     return json || [];
   }
-
+  async function addMovieToWatch(){ 
+    if(false){ //imdbID !== element.movie_id//weryfikacja czy film nie został już dodany, 
+    // ta część jest powiązana z return komponentu który dostosowuje się do funkcji z else jeśli film został dodany
+      await insertMovie(imdbID);
+      await renderDateBase();
+    }
+    else{ // kieruje do opinion
+      router.push({
+        pathname: "/opinion",
+        params: { imdbID: imdbID, isOpinion: isOpinion ? "1" : "0"},
+      });
+    }    
+  }
+  async function deleteMovieToWatch(){ //funkcja usuwa film z listy do obejrzenia
+    if(imdbID === element.movie_id){
+      await deleteMovie(imdbID);
+    }
+  }
+  async function renderDateBase(){ // wyczytywanie listy z bazy danych 
+    const res = await loadMovies();
+    setDateBase(res);
+    const found = res.find((ele: any) => ele.movie_id === imdbID); //weryfikacja czy film jest dodany do obejrzenia
+    setElement(found ?? {});
+    setInList(Boolean(found));
+    if(inList){ // Jeśli jest w liście do obejrzenia to zweryfikuj czy istnieje już opinia
+      const res2 = await loadMoviesAndOpinions(imdbID);
+      const found2 = res2.find((ele: any) => ele.movie_id === imdbID);
+      setIsOpinion(Boolean(found2));
+    }
+  }
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ["movie", imdbID],
     queryFn: () => renderMovie(imdbID),
     enabled: true,
   });
 
-  if(!data){
+
+  if(!data && !dateBase.length){
     return <Text>Loading...</Text>
   }
+  const topActors = data.credits?.cast // wybór 5 najważniejszych aktorów
+    ?.sort((a: any, b: any) => a.order - b.order)
+    .slice(0, 5) || [];
+
+  const director = data.credits?.crew.find((c: any) => c.job === "Director");
   return (
     <ScrollView style={styles.view}>
-        <Text style={styles.movieText}>{data.Title}</Text>
+        <Text style={styles.movieText}>{data.title}</Text>
         <View style={styles.movieImageView}>
-          <Image style={styles.movieImage} source={{uri: data.Poster}}/>
+          <Image style={styles.movieImage} source={{uri: `https://image.tmdb.org/t/p/w500${data.poster_path}`}} alt="No image"/>
         </View>
         <View style={styles.movieView}>
+          <View style={styles.movieButtons}>
+            <PressableOpacity onPress={() => addMovieToWatch()} activeOpacity={0.6}>
+            <Text style={styles.addMov}>{inList ? ( isOpinion ? "Update your opinion" : "Watched? Add opinion!") : "Add to watch list"}</Text>
+            </PressableOpacity>
+            {inList &&           
+            <PressableOpacity onPress={() => deleteMovieToWatch()} activeOpacity={0.6}>
+              <Text style={styles.addMov}>Delete from the list</Text>
+            </PressableOpacity>}
+          </View>
           <View style={styles.movieView2}>
             <View>
-              <Text style={styles.movieViewText2}>Year: {data.Year}</Text>
-              <Text style={styles.movieViewText2}>Runtime: {data.Runtime}</Text>
+              <Text style={styles.movieViewText2}>Year: {data.release_date}</Text>
+              <Text style={styles.movieViewText2}>Runtime: {data.runtime}</Text>
             </View>
             <View>
               <Text style={styles.movieViewText2}>imdbID: {imdbID}</Text>
-              <Text style={styles.movieViewText2}>Ratings: {data.Ratings[0].Value}</Text>
+              <Text style={styles.movieViewText2}>Ratings: {data.vote_average}</Text>
             </View>
           </View>
-          <Text style={styles.movieViewText}>{data.Plot}</Text>
-          <Text style={styles.movieViewText2}>Genre: {data.Genre}</Text>
-          <Text style={styles.movieViewText2}>Director: {data.Director}</Text>
-          <Text style={styles.movieViewText2}>Actors: {data.Actors}</Text>
-          <Text style={styles.movieViewText2}>Country: {data.Country}</Text>
-          <Text style={styles.movieViewText2}>Awards: {data.Awards}</Text>
+          <Text style={styles.movieViewText}>{data.overview}</Text>
+          <Text style={styles.movieViewText2}>Genre: {data.genres.map((genre: any) => genre.name).join(', ')}</Text>
+          <Text style={styles.movieViewText2}>Director: {director?.name || "No data"}</Text>
+          <Text style={styles.movieViewText2}>Actors: {topActors.map((actor: any) => actor.name).join(', ')}</Text>
+          <Text style={styles.movieViewText2}>Origin Country: {data.origin_country}</Text>
         </View>
     </ScrollView>
   );
@@ -69,9 +111,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#8856a7",
   },
+  addMov: {
+    padding: 10,
+    backgroundColor: "#8856a7",
+    borderRadius: 40,
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 1,          
+    shadowRadius: 4,           
+    elevation: 5,     
+    textAlign: "center", 
+    color: "white",
+    fontSize: 15,
+  },
   movieImageView: {
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   movieImage: {
     height: 400,
@@ -119,4 +173,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 5, 
   },
+  movieButtons:{
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  }
 });
