@@ -15,6 +15,7 @@ interface Movie {
 export default function List(){
     const [watched, setWatched] = useState(false);
     const [dateBase, setDateBase] = useState<Movie[]>([]);
+    const [watchedDateBase, setWatchedDateBase] = useState<Movie[]>([]);
     const [dBase, setdBase] = useState<any[]>([]);
     const [id, setId] = useState(0);
     function handleWatchedChange(){
@@ -41,13 +42,13 @@ export default function List(){
         queryFn: () => renderMovie(id),
         enabled: false,
     });
-    function setList(){
+    function setList(){ // generowanie danych zapisanach filmów z API, dzieląc je na do obejrzenia i obejrzane
         dBase.map((item: any) =>{
             if(watched){
                 if(item.watched){
                     setId(item.movie_id);
                     refetch();
-                    setDateBase((m) => [...m, data]);
+                    setWatchedDateBase((m) => [...m, data]);
                 }
             }
             else{
@@ -59,10 +60,14 @@ export default function List(){
             }
         });
     }
+    
+
     return(
         <View style={styles.view}>
             <Pressable onPress={() => handleWatchedChange()}><Text style={styles.changeBtnd}>{watched ? "Obejrzane" : "Do obejrzenia"}</Text></Pressable>
-            <RenderList data={dateBase}/>
+            {isLoading && <Text style={{ textAlign: "center", marginTop: 20 }}>Loading...</Text>}
+            {isError && <Text style={{ textAlign: "center", marginTop: 20 }}>Error loading data.</Text>}      
+            <RenderList data={watched ? watchedDateBase : dateBase}/>
         </View>
     )
 }

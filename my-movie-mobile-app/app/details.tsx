@@ -11,7 +11,7 @@ export default function Details() {
   const [dateBase, setDateBase] = useState<any[]>([]);
   const [element, setElement] = useState({});
   const [inList, setInList] = useState(true);
-  const [isOpinion, setIsOpinion] = useState(true);
+  const [isOpinion, setIsOpinion] = useState(false);
 
   const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string }; //pobierania klucza API
   
@@ -26,7 +26,7 @@ export default function Details() {
     return json || [];
   }
   async function addMovieToWatch(){ 
-    if(imdbID !== element.movie_id){ //weryfikacja czy film nie został już dodany, 
+    if(false){ //imdbID !== element.movie_id//weryfikacja czy film nie został już dodany, 
     // ta część jest powiązana z return komponentu który dostosowuje się do funkcji z else jeśli film został dodany
       await insertMovie(imdbID);
       await renderDateBase();
