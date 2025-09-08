@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 import { useEffect } from "react";
 
-export const db = (SQLite as any).openDatabaseSync("movies.db");
+export const db = (SQLite as any).openDatabaseAsync("movies.db");
 
 export async function insertMovie(id: string){
   await db.withTransactionAsync(async (tx: any) => {
