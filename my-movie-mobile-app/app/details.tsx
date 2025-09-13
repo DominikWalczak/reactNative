@@ -39,7 +39,11 @@ export default function Details() {
   }
   async function deleteMovieToWatch(){ //funkcja usuwa film z listy do obejrzenia
     if(imdbID === element.movie_id){
+      console.log(1);
       await deleteMovie(imdbID);
+      console.log(2);
+      await renderDateBase();
+      console.log(3);
     }
   }
   async function renderDateBase(){ // wyczytywanie listy z bazy danych 
@@ -60,7 +64,7 @@ export default function Details() {
   });
 
 
-  if(!data && !dateBase.length){
+  if(!data){
     return <Text>Loading...</Text>
   }
   const topActors = data.credits?.cast // wybór 5 najważniejszych aktorów
@@ -82,7 +86,8 @@ export default function Details() {
             {inList &&           
             <PressableOpacity onPress={() => deleteMovieToWatch()} activeOpacity={0.6}>
               <Text style={styles.addMov}>Delete from the list</Text>
-            </PressableOpacity>}
+            </PressableOpacity>
+            }
           </View>
           <View style={styles.movieView2}>
             <View>

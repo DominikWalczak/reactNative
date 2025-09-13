@@ -61,6 +61,9 @@ export async function changeOpinion(movie: any) {
 export async function loadMovies() {
   try{
     const result = await db.getAllAsync("SELECT * FROM movie_list");
+    console.log(23232);
+    console.log(result);
+    console.log(23232);
     return result;
   }
   catch(error){

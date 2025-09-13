@@ -1,11 +1,13 @@
 import { StyleSheet, FlatList, Image, Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
+import { useEffect } from "react";
 
-interface Movie {
+export interface Movie {
   id: number;
   title: string;
   release_date?: string; 
   poster_path: string | null;
+  watched: boolean | null;
 }
 interface ListProps {
   data: Movie[];
@@ -15,10 +17,17 @@ interface ListProps {
 export default function RenderList({ data }: ListProps){ 
   // komponent generujący listy na podstawie podanych danych który posiada możliwości przekierowania do details
 
+    useEffect(() =>{
+      console.log(1);
+      console.log(data);
+      console.log(1);
+    }, [])
+
     function handleRedirect(id: string){
     router.push({
         pathname: "/details",
         params: { imdbID: id},
+
     })
     }
     return(

@@ -6,10 +6,11 @@ import { useQueries } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import { Movie } from "../RenderList";
 
+
 export default function List(){
     const [watched, setWatched] = useState(false);
-    const [dateBase, setDateBase] = useState({});
-    const [watchedDateBase, setWatchedDateBase] = useState({});
+    const [dateBase, setDateBase] = useState<Movie[]>([]);
+    const [watchedDateBase, setWatchedDateBase] = useState<Movie[]>([]);
     const [dBase, setdBase] = useState<object[]>([]);
     const [id, setId] = useState("");
     function handleWatchedChange(){
@@ -43,17 +44,22 @@ export default function List(){
             .map((q, idx) => {
                 if (!q.data) return null;
                 const row = dBase[idx];
-                return { ...q.data, watched: row.watched } as Movie & { watched: boolean };
+                console.log(row);
+                return { ...q.data, watched: row.watched } as any & { watched: boolean };
             })
-        const watchedMovies = movieSearch.filter((m: any) => m.watched); 
-        const unwatchedMovies = movieSearch.filter((m: any) => !m.watched);
+        console.log(1111111);
+        const watchedMovies = movieSearch.filter((m: Movie) => m.watched); 
+        console.log(watchedMovies);
+        const unwatchedMovies = movieSearch.filter((m: Movie) => !m.watched);
+        console.log(unwatchedMovies);
+        console.log(1111111);
         setDateBase(unwatchedMovies);
         setWatchedDateBase(watchedMovies);
     }
     
-    if(){
+    if(dBase?.length === 0 || dBase?.length === (watchedDateBase?.length || dateBase?.length) ? false : true){
         return(
-            <View>
+            <View style={styles.view}>
                 <Text>Loading...</Text>
             </View>
 

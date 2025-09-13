@@ -1,0 +1,3 @@
+Jest problem w list który sprawia, że nie przekazuje danych od razu do RenderList, tylko po chwili,
+bramka logiczna if powinna być ok, ale do weryfikacji,
+również jest problem w tym, że list nie aktualizuje danych po dodaniu nowego filmu, tylko bazuje na starych wynikach,
