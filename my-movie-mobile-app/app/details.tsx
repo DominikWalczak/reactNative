@@ -8,9 +8,8 @@ import { deleteMovie, insertMovie, loadMovies, loadMoviesAndOpinions } from './d
 
 export default function Details() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
-  const [dateBase, setDateBase] = useState<any[]>([]);
   const [element, setElement] = useState({});
-  const [inList, setInList] = useState(true);
+  const [inList, setInList] = useState(false);
   const [isOpinion, setIsOpinion] = useState(false);
 
   const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string }; //pobierania klucza API
@@ -26,7 +25,7 @@ export default function Details() {
     return json || [];
   }
   async function addMovieToWatch(){ 
-    if(false){ //imdbID !== element.movie_id//weryfikacja czy film nie został już dodany, 
+    if(imdbID !== element.movie_id){ //imdbID !== element.movie_id//weryfikacja czy film nie został już dodany, 
     // ta część jest powiązana z return komponentu który dostosowuje się do funkcji z else jeśli film został dodany
       await insertMovie(imdbID);
       await renderDateBase();
@@ -45,7 +44,6 @@ export default function Details() {
   }
   async function renderDateBase(){ // wyczytywanie listy z bazy danych 
     const res = await loadMovies();
-    setDateBase(res);
     const found = res.find((ele: any) => ele.movie_id === imdbID); //weryfikacja czy film jest dodany do obejrzenia
     setElement(found ?? {});
     setInList(Boolean(found));

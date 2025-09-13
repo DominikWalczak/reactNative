@@ -2,22 +2,16 @@ import { Text, View, StyleSheet, FlatList, Image, Pressable} from "react-native"
 import { useState, useEffect } from "react";
 import { loadMovies } from "../db/datebase";
 import RenderList from "../RenderList";
-import { useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import Constants from 'expo-constants';
-
-interface Movie {
-  id: number;
-  title: string;
-  release_date?: string; 
-  poster_path: string | null;
-}
+import { Movie } from "../RenderList";
 
 export default function List(){
     const [watched, setWatched] = useState(false);
-    const [dateBase, setDateBase] = useState<Movie[]>([]);
-    const [watchedDateBase, setWatchedDateBase] = useState<Movie[]>([]);
-    const [dBase, setdBase] = useState<any[]>([]);
-    const [id, setId] = useState(0);
+    const [dateBase, setDateBase] = useState({});
+    const [watchedDateBase, setWatchedDateBase] = useState({});
+    const [dBase, setdBase] = useState<object[]>([]);
+    const [id, setId] = useState("");
     function handleWatchedChange(){
         setWatched(!watched);
     }
@@ -31,42 +25,43 @@ export default function List(){
     }, []);
     const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
 
-    async function renderMovie(search: number) {
-        if (!search) return [];
-        const response = await fetch(`https://api.themoviedb.org/3/movie/${search}?api_key=${API_KEY}&language=en-US`);
-        const json = await response.json();
-        return json.results || [];
+    async function renderMovie(id: string, apiKey: string) {
+    const res = await fetch(
+        `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
+    );
+    if (!res.ok) throw new Error("Failed to fetch movie");
+    return res.json();
     }
-    const { data, isLoading, isError, refetch} = useQuery({
-        queryKey: ["movie", id],
-        queryFn: () => renderMovie(id),
-        enabled: false,
+    const movieQueries = useQueries({
+        queries: dBase.map((row) => ({
+        queryKey: ["movie", row.movie_id],
+        queryFn: () => renderMovie(row.movie_id, API_KEY),
+        })),
     });
     function setList(){ // generowanie danych zapisanach filmów z API, dzieląc je na do obejrzenia i obejrzane
-        dBase.map((item: any) =>{
-            if(watched){
-                if(item.watched){
-                    setId(item.movie_id);
-                    refetch();
-                    setWatchedDateBase((m) => [...m, data]);
-                }
-            }
-            else{
-                if(!item.watched){
-                    setId(item.movie_id);
-                    refetch();
-                    setDateBase((m) => [...m, data]);
-                }
-            }
-        });
+        const movieSearch = movieQueries
+            .map((q, idx) => {
+                if (!q.data) return null;
+                const row = dBase[idx];
+                return { ...q.data, watched: row.watched } as Movie & { watched: boolean };
+            })
+        const watchedMovies = movieSearch.filter((m: any) => m.watched); 
+        const unwatchedMovies = movieSearch.filter((m: any) => !m.watched);
+        setDateBase(unwatchedMovies);
+        setWatchedDateBase(watchedMovies);
     }
     
+    if(){
+        return(
+            <View>
+                <Text>Loading...</Text>
+            </View>
 
+        )
+    }
     return(
         <View style={styles.view}>
             <Pressable onPress={() => handleWatchedChange()}><Text style={styles.changeBtnd}>{watched ? "Obejrzane" : "Do obejrzenia"}</Text></Pressable>
-            {isLoading && <Text style={{ textAlign: "center", marginTop: 20 }}>Loading...</Text>}
-            {isError && <Text style={{ textAlign: "center", marginTop: 20 }}>Error loading data.</Text>}      
             <RenderList data={watched ? watchedDateBase : dateBase}/>
         </View>
     )

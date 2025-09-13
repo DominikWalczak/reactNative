@@ -5,12 +5,16 @@ import { useState, useEffect } from "react";
 import { useQuery } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import RenderList from "../RenderList";
+import { initDatabase } from "../db/datebase"
 
 export default function Index() {
 
   const [result, setResult] = useState("");
   const { API_KEY } = Constants.expoConfig.extra;
 
+  useEffect(() =>{
+    initDatabase();
+  }, [])
   async function fetchMovies(search: string){
     if (!search) return [];
     const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}&api_key=${API_KEY}`);
