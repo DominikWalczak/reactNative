@@ -9,6 +9,7 @@ import { Movie } from "../RenderList";
 
 export default function List(){
     const [watched, setWatched] = useState(false);
+    const [page, setPage] = useState(1);
     const [dateBase, setDateBase] = useState<Movie[]>([]);
     const [watchedDateBase, setWatchedDateBase] = useState<Movie[]>([]);
     const [dBase, setdBase] = useState<object[]>([]);
@@ -19,11 +20,13 @@ export default function List(){
     useEffect(() =>{
         const f = async () =>{
             const movies = await loadMovies();
-            setdBase(movies);
+            if((movies?.length && !dBase?.length) || movies?.length !== dBase?.length){
+                setdBase(movies);
+            }
+            setList();
         };
         f();
-        setList();
-    }, []);
+    }, [dBase]);
     const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
 
     async function renderMovie(id: string, apiKey: string) {
@@ -39,7 +42,7 @@ export default function List(){
         queryFn: () => renderMovie(row.movie_id, API_KEY),
         })),
     });
-    function setList(){ // generowanie danych zapisanach filmów z API, dzieląc je na do obejrzenia i obejrzane
+    async function setList(){ // generowanie danych zapisanach filmów z API, dzieląc je na do obejrzenia i obejrzane
         const movieSearch = movieQueries
             .map((q, idx) => {
                 if (!q.data) return null;
@@ -47,19 +50,16 @@ export default function List(){
                 console.log(row);
                 return { ...q.data, watched: row.watched } as any & { watched: boolean };
             })
-        console.log(1111111);
         const watchedMovies = movieSearch.filter((m: Movie) => m.watched); 
-        console.log(watchedMovies);
         const unwatchedMovies = movieSearch.filter((m: Movie) => !m.watched);
-        console.log(unwatchedMovies);
-        console.log(1111111);
         setDateBase(unwatchedMovies);
         setWatchedDateBase(watchedMovies);
     }
     
-    if(dBase?.length === 0 || dBase?.length === (watchedDateBase?.length || dateBase?.length) ? false : true){
+    if(!watchedDateBase?.length && !dateBase?.length){
         return(
             <View style={styles.view}>
+                <Pressable onPress={() => handleWatchedChange()}><Text style={styles.changeBtnd}>{watched ? "Obejrzane" : "Do obejrzenia"}</Text></Pressable>
                 <Text>Loading...</Text>
             </View>
 
