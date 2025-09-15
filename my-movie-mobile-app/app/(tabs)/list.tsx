@@ -9,7 +9,8 @@ import { Movie } from "../RenderList";
 
 export default function List(){
     const [watched, setWatched] = useState(false);
-    const [page, setPage] = useState(1);
+    const [w, setW] = useState(0);
+    const [dBaseWasSet, setdBaseWasSet] = useState(false);
     const [dateBase, setDateBase] = useState<Movie[]>([]);
     const [watchedDateBase, setWatchedDateBase] = useState<Movie[]>([]);
     const [dBase, setdBase] = useState<object[]>([]);
@@ -20,13 +21,19 @@ export default function List(){
     useEffect(() =>{
         const f = async () =>{
             const movies = await loadMovies();
-            if((movies?.length && !dBase?.length) || movies?.length !== dBase?.length){
+            console.log(movies);
+            if(w === 0){
                 setdBase(movies);
             }
-            setList();
+            if(w < 3){
+                setW(x => x+1)
+            }
+            if(dBase?.length > 0){
+                setList(); 
+            }
         };
         f();
-    }, [dBase]);
+    }, [dBase, w]);
     const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
 
     async function renderMovie(id: string, apiKey: string) {
@@ -47,9 +54,9 @@ export default function List(){
             .map((q, idx) => {
                 if (!q.data) return null;
                 const row = dBase[idx];
-                console.log(row);
                 return { ...q.data, watched: row.watched } as any & { watched: boolean };
             })
+            .filter(Boolean);
         const watchedMovies = movieSearch.filter((m: Movie) => m.watched); 
         const unwatchedMovies = movieSearch.filter((m: Movie) => !m.watched);
         setDateBase(unwatchedMovies);
