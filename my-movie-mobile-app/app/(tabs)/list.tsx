@@ -25,7 +25,7 @@ export default function List(){
             if(w === 0){
                 setdBase(movies);
             }
-            if(w < 3){
+            if(w < 5){
                 setW(x => x+1)
             }
             if(dBase?.length > 0){
@@ -66,7 +66,7 @@ export default function List(){
     if(!watchedDateBase?.length && !dateBase?.length){
         return(
             <View style={styles.view}>
-                <Pressable onPress={() => handleWatchedChange()}><Text style={styles.changeBtnd}>{watched ? "Obejrzane" : "Do obejrzenia"}</Text></Pressable>
+                <Pressable onPress={() => handleWatchedChange()}><Text style={styles.changeBtnd}>{watched ? "Watched" : "To watch"}</Text></Pressable>
                 <Text>Loading...</Text>
             </View>
 
@@ -74,7 +74,7 @@ export default function List(){
     }
     return(
         <View style={styles.view}>
-            <Pressable onPress={() => handleWatchedChange()}><Text style={styles.changeBtnd}>{watched ? "Obejrzane" : "Do obejrzenia"}</Text></Pressable>
+            <Pressable onPress={() => handleWatchedChange()}><Text style={styles.changeBtnd}>{watched ? "Watched" : "To watch"}</Text></Pressable>
             <RenderList data={watched ? watchedDateBase : dateBase}/>
         </View>
     )

@@ -38,7 +38,10 @@ export default function Opinion() {
     const id = imdbID;
     if(re1.success){
       setOpinion({rate, id, title, desc});
-      if(Boolean(isOpinion)){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
+      console.log(opinion);
+      console.log(Boolean(isOpinion));
+      console.log(isOpinion);
+      if(isOpinion === "1"){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
         changeOpinion(opinion);
         alert("Opinion changed");
         router.back()
@@ -52,14 +55,21 @@ export default function Opinion() {
       const re2 = textSchema.safeParse(title);
       const re3 = textSchema.safeParse(desc);
       if(re2.success && re3.success){ //weryfikacja czy title i desc są przynajmniej długości 1 znaku
-        setOpinion({rate, id, title, desc}); 
-        if(Boolean(isOpinion)){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
-          changeOpinion(opinion);
+        setOpinion({rate, id, title, desc});
+        console.log(rate); 
+        console.log(id); 
+        console.log(title); 
+        console.log(desc); 
+        console.log(opinion); 
+        console.log(Boolean(isOpinion));
+        console.log(isOpinion);
+        if(isOpinion === "1"){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
+          changeOpinion({rate, id, title, desc});
           alert("Opinion changed");
           router.back()
           return;
       }
-        insertOpinion(opinion); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
+        insertOpinion({rate, id, title, desc}); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
         alert("Opinion added");
         router.back()
         return;
