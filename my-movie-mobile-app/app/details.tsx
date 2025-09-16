@@ -31,6 +31,13 @@ export default function Details() {
       await renderDateBase();
     }
     else{ // kieruje do opinion
+      renderDateBase();
+      console.log(555555555555555555555555)
+      console.log(isOpinion);
+      console.log(555555555555555555555555)
+      console.log(isOpinion ? "1" : "0");
+      console.log(Boolean("1"));
+      console.log(555555555555555555555555)
       router.push({
         pathname: "/opinion",
         params: { imdbID: imdbID, isOpinion: isOpinion ? "1" : "0"},
@@ -48,13 +55,22 @@ export default function Details() {
   }
   async function renderDateBase(){ // wyczytywanie listy z bazy danych 
     const res = await loadMovies();
+    console.log(res)
     const found = res.find((ele: any) => ele.movie_id === imdbID); //weryfikacja czy film jest dodany do obejrzenia
     setElement(found ?? {});
+    console.log(element);
+    console.log(found);
+    console.log(Boolean(found));
     setInList(Boolean(found));
     if(inList){ // Jeśli jest w liście do obejrzenia to zweryfikuj czy istnieje już opinia
+      console.log(111);
       const res2 = await loadMoviesAndOpinions(imdbID);
+      console.log(res2);
       const found2 = res2.find((ele: any) => ele.movie_id === imdbID);
+      console.log(found2);
+      console.log(Boolean(found2));
       setIsOpinion(Boolean(found2));
+      console.log(Boolean(found2) ? "1" : "0");
     }
   }
   const {data, isLoading, isError, refetch} = useQuery({

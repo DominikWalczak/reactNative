@@ -8,9 +8,9 @@ export default function Opinion() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
   const { isOpinion } = useLocalSearchParams<{isOpinion: string}>();
   const [opinion, setOpinion] = useState({});
-  const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [rate, setRate] = useState("");
+  const [title, setTitle] = useState<string>("");
+  const [desc, setDesc] = useState<string>("");
+  const [rate, setRate] = useState<string>("");
 
   const minMax = z.number().min(1, "Minimum value is 1").max(5, "Maximum value is 5"); 
   // wybrałem number().min().max() aby móc zweryfikować czy podana wartość znajduje się w przedziale 1-5, 
@@ -23,7 +23,12 @@ export default function Opinion() {
 
   useEffect(() => { //useEffect sprawdza czy zaaktualizowano bazę danych i narzuca zmiany do zmiennych title, desc i rate, 
   // umożliwia to zaczynanie edycji od momentu w którym użytkownik ją zostawił, a nie od początku
+    console.log(9999999999999)
+    console.log(Boolean(isOpinion));
+    console.log(isOpinion);
+    console.log(9999999999999)
     if(Boolean(isOpinion)){
+      console.log(22222222)
       listCheck();
     }
   },[]);
@@ -38,18 +43,24 @@ export default function Opinion() {
     const id = imdbID;
     if(re1.success){
       setOpinion({rate, id, title, desc});
-      console.log(opinion);
-      console.log(Boolean(isOpinion));
-      console.log(isOpinion);
+      console.log(rate); 
+      console.log(id); 
+      console.log(title); 
+      console.log(desc); 
+      console.log(isOpinion); 
       if(isOpinion === "1"){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
-        changeOpinion(opinion);
+        changeOpinion({rate, id, title, desc});
+        console.log(10000000000)
         alert("Opinion changed");
         router.back()
+        console.log(10000000000)
         return;
       }
-      insertOpinion(opinion); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
+      console.log(11100000000)
+      insertOpinion({rate, id, title, desc}); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
       alert("Opinion added");
       router.back()
+      console.log(11100000000)
     }
     else{
       const re2 = textSchema.safeParse(title);
@@ -60,9 +71,7 @@ export default function Opinion() {
         console.log(id); 
         console.log(title); 
         console.log(desc); 
-        console.log(opinion); 
-        console.log(Boolean(isOpinion));
-        console.log(isOpinion);
+        console.log(isOpinion); 
         if(isOpinion === "1"){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
           changeOpinion({rate, id, title, desc});
           alert("Opinion changed");

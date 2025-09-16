@@ -1,6 +1,4 @@
 import * as SQLite from "expo-sqlite";
-import { useEffect } from "react";
-import { ca } from "zod/v4/locales";
 
 export const db = SQLite.openDatabaseSync("movies.db");
 
@@ -24,12 +22,18 @@ export async function insertOpinion(movie: any) {
     console.log(3);
     console.log(result);
     console.log(3); 
+    console.log(movie.rate);
+    console.log(movie.id);
+    console.log(movie.title);
+    console.log(movie.desc);
     try{
       await db.execAsync(
         `INSERT INTO movie_opinion (opinion_rate, movie_id, opinion_title, opinion_desc, date_watched)
         VALUES(${movie.rate}, '${movie.id}', '${movie.title}', '${movie.desc}', CURRENT_DATE)`
       );
-      changeToWatched(movie.id);
+      await db.execAsync(
+        `UPDATE movie_list SET watched = 1 WHERE movie_id = ${movie.id}`
+      );
     }
     catch(error){
       console.log(error);
@@ -55,26 +59,6 @@ export async function deleteMovie(id: string) {
     await db.execAsync(
       `DELETE FROM movie_list WHERE movie_id = ${id}`
     );
-  });
-}
-
-export async function changeToWatched(id: string) {
-  console.log(5555555555555);
-  console.log(id);
-  await db.withTransactionAsync(async () => {
-    try{    
-      console.log(5555555555555);
-      const result = await db.execAsync(
-        `SELECT * FROM movie_list WHERE movie_id = ${id}`
-      );
-      console.log(result);
-      await db.execAsync(
-        `UPDATE movie_list SET watched = CASE watched WHEN 0 THEN 1 ELSE 0 END WHERE movie_id = ${id}`
-      );
-    }catch(error){
-      console.log(error);
-    }
-    console.log(5555555555555);
   });
 }
 

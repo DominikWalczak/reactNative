@@ -22,10 +22,10 @@ export default function List(){
         const f = async () =>{
             const movies = await loadMovies();
             console.log(movies);
-            if(w === 0){
+            if(w === 0 || watched){
                 setdBase(movies);
             }
-            if(w < 5){
+            if(w < 10){
                 setW(x => x+1)
             }
             if(dBase?.length > 0){
@@ -33,7 +33,7 @@ export default function List(){
             }
         };
         f();
-    }, [dBase, w]);
+    }, [w, watched]);
     const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
 
     async function renderMovie(id: string, apiKey: string) {
