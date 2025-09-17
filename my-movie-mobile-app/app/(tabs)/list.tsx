@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, FlatList, Image, Pressable} from "react-native"
 import { useState, useEffect } from "react";
 import { loadMovies } from "../db/datebase";
 import RenderList from "../RenderList";
+import { useIsFocused } from "@react-navigation/native";
 import { useQueries } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import { Movie } from "../RenderList";
@@ -15,6 +16,9 @@ export default function List(){
     const [watchedDateBase, setWatchedDateBase] = useState<Movie[]>([]);
     const [dBase, setdBase] = useState<object[]>([]);
     const [id, setId] = useState("");
+
+    const isFocused = useIsFocused();
+    
     function handleWatchedChange(){
         setWatched(!watched);
     }
@@ -32,8 +36,14 @@ export default function List(){
                 setList(); 
             }
         };
+        if (isFocused) {
+        console.log("Page entered");
+        // router.push("/somewhere") // optional
+        } else {
+        console.log("Page left");
+        }
         f();
-    }, [w, watched]);
+    }, [w, watched, isFocused]);
     const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
 
     async function renderMovie(id: string, apiKey: string) {

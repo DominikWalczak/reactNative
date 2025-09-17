@@ -27,16 +27,22 @@ export default function Opinion() {
     console.log(Boolean(isOpinion));
     console.log(isOpinion);
     console.log(9999999999999)
-    if(Boolean(isOpinion)){
+    if(isOpinion === "1"){
       console.log(22222222)
       listCheck();
     }
   },[]);
   async function listCheck() { //pobieranie istniejącej opinii w celu edycji
     const re = await loadMoviesAndOpinions(imdbID);
-    setTitle(re.opinion_title);
-    setDesc(re.opinion_desc);
-    setRate(re.opinion_rate);
+    console.log(7777777777)
+    console.log(re[0])
+    console.log(re[0].opinion_title)
+    console.log(re[0].opinion_desc)
+    console.log(re[0].opinion_rate)
+    setTitle(re[0].opinion_title);
+    setDesc(re[0].opinion_desc);
+    setRate(re[0].opinion_rate);
+    console.log(7777777777)
   }
   function handleButtonPressed(){
     const re1 = belowFour.safeParse(Number(rate));
@@ -73,13 +79,17 @@ export default function Opinion() {
         console.log(desc); 
         console.log(isOpinion); 
         if(isOpinion === "1"){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
+          console.log(111000000002)
           changeOpinion({rate, id, title, desc});
           alert("Opinion changed");
           router.back()
+          console.log(111000000002)
           return;
       }
+        console.log(111000033332)
         insertOpinion({rate, id, title, desc}); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
         alert("Opinion added");
+        console.log(111000033332)
         router.back()
         return;
       }
@@ -117,7 +127,8 @@ export default function Opinion() {
         </TextInput>
         <TextInput style={styles.input} 
           placeholder="Description" 
-          value={desc}onChangeText={setDesc} 
+          value={desc}
+          onChangeText={setDesc} 
           multiline>
         </TextInput>
         <TextInput style={styles.input} 
@@ -131,6 +142,10 @@ export default function Opinion() {
         <Pressable onPress={() => handleButtonPressed()}>
           <Text style={[styles.input, styles.btnd]}>Add opinion!</Text>
         </Pressable>
+        <Pressable onPress={() => console.log(rate)}>
+          <Text style={[styles.input, styles.btnd]}>Rate</Text>
+        </Pressable>
+        <Text>Current rate state: "{rate}"</Text>
     </ScrollView>
   );
 }

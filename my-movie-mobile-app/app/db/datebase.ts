@@ -97,9 +97,17 @@ export async function loadMovies() {
 }
 
 export async function loadMoviesAndOpinions(id: string) {
-  const result = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id WHERE movie_list.movie_id = ${id}`);
-  return result;
+  try{  
+    console.log(500000)
+    const result = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id WHERE movie_list.movie_id = ${id}`);
+    console.log(result)
+    console.log(500000)
+    return result;
+  }catch(error){
+
+  }
 }
+
 
 export async function initDatabase() {
   try{
@@ -113,7 +121,7 @@ export async function initDatabase() {
         );
         await db.execAsync(`CREATE TABLE IF NOT EXISTS movie_opinion (
           opinion_id INTEGER PRIMARY KEY AUTOINCREMENT,
-          opinion_rate REAL NOT NULL CHECK(opinion_rate >= 1 AND opinion_rate <= 5),
+          opinion_rate TEXT NOT NULL,
           movie_id TEXT NOT NULL,
           opinion_title TEXT NOT NULL,
           opinion_desc TEXT NOT NULL,

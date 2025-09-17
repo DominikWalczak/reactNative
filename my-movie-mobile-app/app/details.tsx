@@ -1,9 +1,10 @@
 import { Text, View, StyleSheet, Image, ScrollView, Pressable} from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import Constants from 'expo-constants';
+import { useIsFocused } from "@react-navigation/native";
 import { deleteMovie, insertMovie, loadMovies, loadMoviesAndOpinions } from './db/datebase';
 
 export default function Details() {
@@ -11,12 +12,20 @@ export default function Details() {
   const [element, setElement] = useState({});
   const [inList, setInList] = useState(false);
   const [isOpinion, setIsOpinion] = useState(false);
+  const [x, setX] = useState<number>(0);
 
+  const isFocused = useIsFocused();
   const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string }; //pobierania klucza API
   
   useEffect(() =>{ //weryfikacja bazy danych aby sprawdzać zmiany (usuwanie oraz dodawanie do obejrzenia)
     renderDateBase();
-  }, []);
+    if(isFocused && x < 10){
+      setX(x => x+1);
+    }
+    else if(!isFocused){
+      setX(x => x = 0);
+    }
+  }, [x, isFocused]);
   async function renderMovie(search: string) {
     if (!search) return;
 
