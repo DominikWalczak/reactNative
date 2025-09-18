@@ -142,10 +142,6 @@ export default function Opinion() {
         <Pressable onPress={() => handleButtonPressed()}>
           <Text style={[styles.input, styles.btnd]}>Add opinion!</Text>
         </Pressable>
-        <Pressable onPress={() => console.log(rate)}>
-          <Text style={[styles.input, styles.btnd]}>Rate</Text>
-        </Pressable>
-        <Text>Current rate state: "{rate}"</Text>
     </ScrollView>
   );
 }
