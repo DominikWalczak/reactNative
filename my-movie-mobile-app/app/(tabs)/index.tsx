@@ -1,6 +1,5 @@
-import { Text, View, StyleSheet, FlatList, Image, Pressable} from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import { Searchbar } from "react-native-paper";
-import { router } from "expo-router";
 import 'react-native-reanimated';
 import { useState, useEffect } from "react";
 import { useQuery } from '@tanstack/react-query';

@@ -7,7 +7,6 @@ import { insertOpinion, changeOpinion, loadMoviesAndOpinions } from './db/dateba
 export default function Opinion() {
   const { imdbID } = useLocalSearchParams<{imdbID: string}>();
   const { isOpinion } = useLocalSearchParams<{isOpinion: string}>();
-  const [opinion, setOpinion] = useState({});
   const [title, setTitle] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
   const [rate, setRate] = useState<string>("");
@@ -23,73 +22,42 @@ export default function Opinion() {
 
   useEffect(() => { //useEffect sprawdza czy zaaktualizowano bazę danych i narzuca zmiany do zmiennych title, desc i rate, 
   // umożliwia to zaczynanie edycji od momentu w którym użytkownik ją zostawił, a nie od początku
-    console.log(9999999999999)
-    console.log(Boolean(isOpinion));
-    console.log(isOpinion);
-    console.log(9999999999999)
     if(isOpinion === "1"){
-      console.log(22222222)
       listCheck();
     }
   },[]);
   async function listCheck() { //pobieranie istniejącej opinii w celu edycji
     const re = await loadMoviesAndOpinions(imdbID);
-    console.log(7777777777)
-    console.log(re[0])
-    console.log(re[0].opinion_title)
-    console.log(re[0].opinion_desc)
-    console.log(re[0].opinion_rate)
     setTitle(re[0].opinion_title);
     setDesc(re[0].opinion_desc);
     setRate(re[0].opinion_rate);
-    console.log(7777777777)
   }
   function handleButtonPressed(){
     const re1 = belowFour.safeParse(Number(rate));
     const id = imdbID;
     if(re1.success){
-      setOpinion({rate, id, title, desc});
-      console.log(rate); 
-      console.log(id); 
-      console.log(title); 
-      console.log(desc); 
-      console.log(isOpinion); 
       if(isOpinion === "1"){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
         changeOpinion({rate, id, title, desc});
-        console.log(10000000000)
         alert("Opinion changed");
         router.back()
-        console.log(10000000000)
         return;
       }
-      console.log(11100000000)
       insertOpinion({rate, id, title, desc}); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
       alert("Opinion added");
       router.back()
-      console.log(11100000000)
     }
     else{
       const re2 = textSchema.safeParse(title);
       const re3 = textSchema.safeParse(desc);
       if(re2.success && re3.success){ //weryfikacja czy title i desc są przynajmniej długości 1 znaku
-        setOpinion({rate, id, title, desc});
-        console.log(rate); 
-        console.log(id); 
-        console.log(title); 
-        console.log(desc); 
-        console.log(isOpinion); 
         if(isOpinion === "1"){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
-          console.log(111000000002)
           changeOpinion({rate, id, title, desc});
           alert("Opinion changed");
           router.back()
-          console.log(111000000002)
           return;
       }
-        console.log(111000033332)
         insertOpinion({rate, id, title, desc}); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
         alert("Opinion added");
-        console.log(111000033332)
         router.back()
         return;
       }

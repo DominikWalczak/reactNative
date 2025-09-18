@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, FlatList, Image, Pressable} from "react-native";
+import { Text, View, StyleSheet, Pressable} from "react-native";
 import { useState, useEffect } from "react";
 import { loadMovies } from "../db/datebase";
 import RenderList from "../RenderList";
@@ -11,11 +11,9 @@ import { Movie } from "../RenderList";
 export default function List(){
     const [watched, setWatched] = useState(false);
     const [w, setW] = useState(0);
-    const [dBaseWasSet, setdBaseWasSet] = useState(false);
     const [dateBase, setDateBase] = useState<Movie[]>([]);
     const [watchedDateBase, setWatchedDateBase] = useState<Movie[]>([]);
     const [dBase, setdBase] = useState<object[]>([]);
-    const [id, setId] = useState("");
 
     const isFocused = useIsFocused();
     
@@ -36,12 +34,6 @@ export default function List(){
                 setList(); 
             }
         };
-        if (isFocused) {
-        console.log("Page entered");
-        // router.push("/somewhere") // optional
-        } else {
-        console.log("Page left");
-        }
         f();
     }, [w, watched, isFocused]);
     const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };

@@ -18,14 +18,6 @@ export async function insertMovie(id: string) {
 export async function insertOpinion(movie: any) {
   await db.withTransactionAsync(async () => {
     const result = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id`);
-    console.log("movie object:", movie);
-    console.log(3);
-    console.log(result);
-    console.log(3); 
-    console.log(movie.rate);
-    console.log(movie.id);
-    console.log(movie.title);
-    console.log(movie.desc);
     try{
       await db.execAsync(
         `INSERT INTO movie_opinion (opinion_rate, movie_id, opinion_title, opinion_desc, date_watched)
@@ -39,10 +31,6 @@ export async function insertOpinion(movie: any) {
       console.log(error);
     }
     const result2 = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id`);
-    console.log("movie object:", movie);
-    console.log(34);
-    console.log(result2);
-    console.log(34);
   });
 }
 
@@ -63,14 +51,9 @@ export async function deleteMovie(id: string) {
 }
 
 export async function changeOpinion(movie: any) {
-  console.log(666);
   await db.withTransactionAsync(async () => {
-    console.log(555);
     try{
       const result = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id`);
-      console.log(2);
-      console.log(result);
-      console.log(2);
       await db.execAsync(
         `UPDATE movie_opinion SET opinion_rate = ${movie.rate}, movie_id = '${movie.id}', opinion_title = '${movie.title}', opinion_desc = '${movie.desc}' WHERE movie_id = '${movie.id}'`
       );
@@ -86,9 +69,6 @@ export async function changeOpinion(movie: any) {
 export async function loadMovies() {
   try{
     const result = await db.getAllAsync("SELECT * FROM movie_list");
-    console.log(23232);
-    console.log(result);
-    console.log(23232);
     return result;
   }
   catch(error){
@@ -98,10 +78,7 @@ export async function loadMovies() {
 
 export async function loadMoviesAndOpinions(id: string) {
   try{  
-    console.log(500000)
     const result = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id WHERE movie_list.movie_id = ${id}`);
-    console.log(result)
-    console.log(500000)
     return result;
   }catch(error){
 

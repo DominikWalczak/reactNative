@@ -1,3 +1,0 @@
-poprawiać dalej opinion, bramka logiczna przekazująca dane czy opinia istnieje działa wadliwie, 
-w details nie zmienia się tekst na update kiedy jest opinia dostępna,
-najpewniej problem jest w wyborze insertu a nie updateu, do jednego filmu z jakiegoś powodu można dodać 1+ opinii
