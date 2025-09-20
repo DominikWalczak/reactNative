@@ -34,18 +34,13 @@ export async function insertOpinion(movie: any) {
   });
 }
 
-export async function deleteOpinion(id: string) {
-  await db.withTransactionAsync(async () => {
-    await db.execAsync(
-      `DELETE FROM movie_opinion WHERE opinion_id = ${id}`
-    );
-  });
-}
-
 export async function deleteMovie(id: string) {
   await db.withTransactionAsync(async () => {
     await db.execAsync(
       `DELETE FROM movie_list WHERE movie_id = ${id}`
+    );
+    await db.execAsync(
+      `DELETE FROM movie_opinion WHERE movie_id = ${id}`
     );
   });
 }
@@ -79,6 +74,11 @@ export async function loadMovies() {
 export async function loadMoviesAndOpinions(id: string) {
   try{  
     const result = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id WHERE movie_list.movie_id = ${id}`);
+    const result2 = await db.getAllAsync(`SELECT * FROM movie_opinion`);
+    console.log(1);
+    console.log(result2);
+    console.log(1);
+
     return result;
   }catch(error){
 
