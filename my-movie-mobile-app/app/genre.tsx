@@ -35,6 +35,6 @@ export default function Genre(){
 const styles = StyleSheet.create({
     view: {
         flex: 1,
-        backgroundColor: "#8856a7",
+        backgroundColor: "#8856a7"
     },
 })
