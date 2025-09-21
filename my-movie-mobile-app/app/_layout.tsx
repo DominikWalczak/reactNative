@@ -43,6 +43,15 @@ export default function RootLayout() {
             },
           }}
         />
+      <Stack.Screen
+          name="credits"
+          options={{
+            title: "",
+            headerStyle: {
+              backgroundColor: "#e0ecf4",
+            },
+          }}
+        />
       </Stack>
     </QueryClientProvider>
   );

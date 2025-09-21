@@ -77,6 +77,12 @@ export default function Details() {
       params: {genreId: gId},
     });
   }
+  function handleCreditsRedirect(creditId: any){
+    router.push({
+      pathname: "/credits",
+      params: {creditId: creditId},
+    });
+  }
 
 
   if(!data){
@@ -119,13 +125,21 @@ export default function Details() {
             {data.genres.map((genre: any, index: number) => (
             (<PressableOpacity key={genre.id} activeOpacity={0.6} onPress={() => handleGenresRedirect(genre.id)}>
               <Text style={styles.movieViewText2}>
-                {index === 0 ? "Genre:" : ""}{index !== 0 ? ", " : " "}{genre.name}
+                {index === 0 ? "Genre: " : ""}{genre.name}{(index !== 0 && index !== data.genres.length - 1)? ", " : " "}
               </Text>
             </PressableOpacity>)
           ))}
           </View>
           <Text style={styles.movieViewText2}>Director: {director?.name || "No data"}</Text>
-          <Text style={styles.movieViewText2}>Actors: {topActors.map((actor: any) => actor.name).join(', ')}</Text>
+            <View style={styles.movieViewText3View}>
+            {topActors.map((actor: any, index: number) => (
+              (<PressableOpacity key={actor.id} activeOpacity={0.6} onPress={() => handleCreditsRedirect(actor.id)}>
+                <Text style={styles.movieViewText2}>
+                  {index === 0 ? "Actors: " : ""}{actor.name}{index !== topActors.length - 1 ? ", " : " "}
+                </Text>
+              </PressableOpacity>)
+            ))}
+          </View>
           <Text style={styles.movieViewText2}>Origin Country: {data.origin_country}</Text>
         </View>
     </ScrollView>
@@ -201,6 +215,7 @@ const styles = StyleSheet.create({
   },
   movieViewText3View: {
     display: "flex",
+    flexWrap: "wrap",
     flexDirection: "row",
   },
   movieButtons:{
