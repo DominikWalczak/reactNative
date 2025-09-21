@@ -55,6 +55,7 @@ export default function Details() {
   }
   async function renderDateBase(){ // wyczytywanie listy z bazy danych 
     const res = await loadMovies();
+    const res3 = await loadMoviesAndOpinions(imdbID);
     const found = res.find((ele: any) => ele.movie_id === imdbID); //weryfikacja czy film jest dodany do obejrzenia
     setElement(found ?? {});
     setInList(Boolean(found));
@@ -69,6 +70,13 @@ export default function Details() {
     queryFn: () => renderMovie(imdbID),
     enabled: true,
   });
+
+  function handleGenresRedirect(gId: any){
+    router.push({
+      pathname: "/genre",
+      params: {genreId: gId},
+    });
+  }
 
 
   if(!data){
@@ -107,7 +115,15 @@ export default function Details() {
             </View>
           </View>
           <Text style={styles.movieViewText}>{data.overview}</Text>
-          <Text style={styles.movieViewText2}>Genre: {data.genres.map((genre: any) => genre.name).join(', ')}</Text>
+          <View style={styles.movieViewText3View}>
+            {data.genres.map((genre: any, index: number) => (
+            (<PressableOpacity key={genre.id} activeOpacity={0.6} onPress={() => handleGenresRedirect(genre.id)}>
+              <Text style={styles.movieViewText2}>
+                {index === 0 ? "Genre:" : ""}{index !== 0 ? ", " : " "}{genre.name}
+              </Text>
+            </PressableOpacity>)
+          ))}
+          </View>
           <Text style={styles.movieViewText2}>Director: {director?.name || "No data"}</Text>
           <Text style={styles.movieViewText2}>Actors: {topActors.map((actor: any) => actor.name).join(', ')}</Text>
           <Text style={styles.movieViewText2}>Origin Country: {data.origin_country}</Text>
@@ -182,6 +198,10 @@ const styles = StyleSheet.create({
   movieViewText2: {
     fontSize: 18,
     marginBottom: 5, 
+  },
+  movieViewText3View: {
+    display: "flex",
+    flexDirection: "row",
   },
   movieButtons:{
     display: "flex",
