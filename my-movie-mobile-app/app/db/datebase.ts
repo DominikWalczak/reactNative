@@ -11,50 +11,63 @@ export async function insertMovie(id: string) {
       loadMovies();
     });
   } catch (error) {
-    console.error("Błąd podczas INSERT:", error);
+    console.error("Movie Insert Error:", error);
   }
 }
 
 export async function insertOpinion(movie: any) {
   await db.withTransactionAsync(async () => {
-    const result = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id`);
     try{
       await db.execAsync(
         `INSERT INTO movie_opinion (opinion_rate, movie_id, opinion_title, opinion_desc, date_watched)
         VALUES(${movie.rate}, '${movie.id}', '${movie.title}', '${movie.desc}', CURRENT_DATE)`
       );
+    }
+    catch(error){
+      console.error(`Opinion Insert Error: ${error}`);
+    }
+    try{
       await db.execAsync(
         `UPDATE movie_list SET watched = 1 WHERE movie_id = ${movie.id}`
       );
     }
     catch(error){
-      console.log(error);
+      console.error(`Opinion/Watched Change Error: ${error}`);
     }
-    const result2 = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id`);
   });
 }
 
 export async function deleteMovie(id: string) {
   await db.withTransactionAsync(async () => {
-    await db.execAsync(
+    try{
+      await db.execAsync(
       `DELETE FROM movie_list WHERE movie_id = ${id}`
-    );
-    await db.execAsync(
-      `DELETE FROM movie_opinion WHERE movie_id = ${id}`
-    );
+      );
+    }
+    catch(error){
+      console.error(`Movie Delete Error: ${error}`);
+    }
+    try{
+      await db.execAsync(
+        `DELETE FROM movie_opinion WHERE movie_id = ${id}`
+      );
+    }
+    catch(error){
+      console.error(`Opinion Delete Error: ${error}`);
+    }
+
   });
 }
 
 export async function changeOpinion(movie: any) {
   await db.withTransactionAsync(async () => {
     try{
-      const result = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id`);
       await db.execAsync(
         `UPDATE movie_opinion SET opinion_rate = ${movie.rate}, movie_id = '${movie.id}', opinion_title = '${movie.title}', opinion_desc = '${movie.desc}' WHERE movie_id = '${movie.id}'`
       );
     }
     catch(error){
-      console.log(error);
+      console.error(`Opinion Change Error: ${error}`);
     }
    
   });
@@ -67,21 +80,16 @@ export async function loadMovies() {
     return result;
   }
   catch(error){
-    console.log(error);
+    console.error(`Movies Load Error: ${error}`);
   }
 }
 
 export async function loadMoviesAndOpinions(id: string) {
   try{  
     const result = await db.getAllAsync(`SELECT * FROM movie_list LEFT JOIN movie_opinion ON movie_list.movie_id = movie_opinion.movie_id WHERE movie_list.movie_id = ${id}`);
-    const result2 = await db.getAllAsync(`SELECT * FROM movie_opinion`);
-    console.log(1);
-    console.log(result2);
-    console.log(1);
-
     return result;
   }catch(error){
-
+    console.error(`Movies&Opinion Load: ${error}`);
   }
 }
 
@@ -109,7 +117,7 @@ export async function initDatabase() {
   });
   }
   catch(error){
-    console.log(error);
+    console.error(`Datebase Init Error: ${error}`);
   }
   // try {
   //   await db.withTransactionAsync(async () => {

@@ -1,9 +1,14 @@
 import { Tabs } from "expo-router";
 import { ImageBackground, Image } from "react-native";
 import "../globals.css";
+import { useEffect } from "react";
+import { initDatabase } from "../db/datebase";
 
 export default function RootLayout() {
 
+  useEffect(() =>{
+    initDatabase();
+  }, [])
   return(
     <Tabs
       screenOptions={{
