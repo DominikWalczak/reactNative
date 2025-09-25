@@ -140,20 +140,22 @@ export default function Details() {
           </View>
           <Text style={styles.movieViewText}>{data.overview}</Text>
           <View style={styles.movieViewText3View}>
+            <Text style={styles.movieViewText3Title}>{"Genre:  "}</Text>
             {data.genres.map((genre: any, index: number) => (
             (<PressableOpacity key={genre.id} activeOpacity={0.6} onPress={() => handleGenresRedirect(genre.id)}>
-              <Text style={styles.movieViewText2}>
-                {index === 0 ? "Genre: " : ""}{genre.name}{index !== data.genres.length - 1 ? ", " : " "}
+              <Text style={styles.movieViewText3}>
+                {genre.name}
               </Text>
             </PressableOpacity>)
           ))}
           </View>
           <Text style={styles.movieViewText2}>Director: {director?.name || "No data"}</Text>
             <View style={styles.movieViewText3View}>
+            <Text style={styles.movieViewText3Title}>{"Actors:  "}</Text>
             {topActors.map((actor: any, index: number) => (
               (<PressableOpacity key={actor.id} activeOpacity={0.6} onPress={() => handleCreditsRedirect(actor.id)}>
-                <Text style={styles.movieViewText2}>
-                  {index === 0 ? "Actors: " : ""}{actor.name}{index !== topActors.length - 1 ? ", " : " "}
+                <Text style={styles.movieViewText3}>
+                  {actor.name}
                 </Text>
               </PressableOpacity>)
             ))}
@@ -227,9 +229,27 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 20, 
   },
+  movieViewText3Title: {
+    fontSize: 18,
+    marginBottom: 5, 
+  },
   movieViewText2: {
     fontSize: 18,
     marginBottom: 5, 
+  },
+    movieViewText3: {
+    fontSize: 18,
+    backgroundColor: "#8856a7",
+    color: "white",
+    marginBottom: 5,
+    marginRight: 5, 
+    padding: 10,
+    borderRadius: 30,
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 1,          
+    shadowRadius: 4,           
+    elevation: 5,    
+
   },
   movieViewText3View: {
     display: "flex",
