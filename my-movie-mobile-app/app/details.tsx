@@ -36,8 +36,13 @@ export default function Details() {
   async function addMovieToWatch(){ 
     if(imdbID !== element.movie_id){ //imdbID !== element.movie_id//weryfikacja czy film nie został już dodany, 
     // ta część jest powiązana z return komponentu który dostosowuje się do funkcji z else jeśli film został dodany
+    try{
       await insertMovie(imdbID);
       await renderDateBase();
+    }
+    catch(error){
+      console.error(`addMovieToWatch Error: ${error}`);
+    }
     }
     else{ // kieruje do opinion
       renderDateBase();
@@ -49,21 +54,34 @@ export default function Details() {
   }
   async function deleteMovieToWatch(){ //funkcja usuwa film z listy do obejrzenia
     if(imdbID === element.movie_id){
-      await deleteMovie(imdbID);
-      await renderDateBase();
+      try{
+        await deleteMovie(imdbID);
+        await renderDateBase();
+      }
+      catch(error){
+        console.error(`deleteMovieToWatch Error: ${error}`);
+      }
     }
   }
   async function renderDateBase(){ // wyczytywanie listy z bazy danych 
-    const res = await loadMovies();
-    const res3 = await loadMoviesAndOpinions(imdbID);
-    const found = res.find((ele: any) => ele.movie_id === imdbID); //weryfikacja czy film jest dodany do obejrzenia
-    setElement(found ?? {});
-    setInList(Boolean(found));
+      try{
+        const res = await loadMovies();
+        const found = res.find((ele: any) => ele.movie_id === imdbID); //weryfikacja czy film jest dodany do obejrzenia
+        setElement(found ?? {});
+        const inList = Boolean(found);
+        setInList(inList);
     if(inList){ // Jeśli jest w liście do obejrzenia to zweryfikuj czy istnieje już opinia
       const res2 = await loadMoviesAndOpinions(imdbID);
       const found2 = res2.find((ele: any) => ele.movie_id === imdbID);
       setIsOpinion(Boolean(found2));
     }
+      }
+      catch(error){
+        console.error(`renderDateBase Error: ${error}`);
+      }
+    
+    
+    
   }
   const {data, isLoading, isError, refetch} = useQuery({
     queryKey: ["movie", imdbID],
@@ -75,6 +93,12 @@ export default function Details() {
     router.push({
       pathname: "/genre",
       params: {genreId: gId},
+    });
+  }
+  function handleCreditsRedirect(creditId: any){
+    router.push({
+      pathname: "/credits",
+      params: {creditId: creditId},
     });
   }
 
@@ -119,13 +143,21 @@ export default function Details() {
             {data.genres.map((genre: any, index: number) => (
             (<PressableOpacity key={genre.id} activeOpacity={0.6} onPress={() => handleGenresRedirect(genre.id)}>
               <Text style={styles.movieViewText2}>
-                {index === 0 ? "Genre:" : ""}{index !== 0 ? ", " : " "}{genre.name}
+                {index === 0 ? "Genre: " : ""}{genre.name}{index !== data.genres.length - 1 ? ", " : " "}
               </Text>
             </PressableOpacity>)
           ))}
           </View>
           <Text style={styles.movieViewText2}>Director: {director?.name || "No data"}</Text>
-          <Text style={styles.movieViewText2}>Actors: {topActors.map((actor: any) => actor.name).join(', ')}</Text>
+            <View style={styles.movieViewText3View}>
+            {topActors.map((actor: any, index: number) => (
+              (<PressableOpacity key={actor.id} activeOpacity={0.6} onPress={() => handleCreditsRedirect(actor.id)}>
+                <Text style={styles.movieViewText2}>
+                  {index === 0 ? "Actors: " : ""}{actor.name}{index !== topActors.length - 1 ? ", " : " "}
+                </Text>
+              </PressableOpacity>)
+            ))}
+          </View>
           <Text style={styles.movieViewText2}>Origin Country: {data.origin_country}</Text>
         </View>
     </ScrollView>
@@ -201,6 +233,7 @@ const styles = StyleSheet.create({
   },
   movieViewText3View: {
     display: "flex",
+    flexWrap: "wrap",
     flexDirection: "row",
   },
   movieButtons:{

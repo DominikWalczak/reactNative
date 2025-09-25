@@ -1,25 +1,28 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Searchbar } from "react-native-paper";
 import 'react-native-reanimated';
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import RenderList from "../RenderList";
-import { initDatabase } from "../db/datebase"
 
 export default function Index() {
 
   const [result, setResult] = useState("");
   const { API_KEY } = Constants.expoConfig.extra;
 
-  useEffect(() =>{
-    initDatabase();
-  }, [])
   async function fetchMovies(search: string){
     if (!search) return [];
-    const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}&api_key=${API_KEY}`);
-    const json = await response.json();
-    return json.results || [];
+    try{
+      const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}&api_key=${API_KEY}`);
+      if(!response.ok) return [];
+      const json = await response.json();
+      return json.results || [];
+    }
+    catch(error){
+      console.error(`fetchMovies Error: ${error}`);
+      return [];
+    }
   }
   function handleResultChange(text: string){
     setResult(text);

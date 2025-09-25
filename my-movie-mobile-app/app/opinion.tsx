@@ -27,41 +27,51 @@ export default function Opinion() {
     }
   },[]);
   async function listCheck() { //pobieranie istniejącej opinii w celu edycji
-    const re = await loadMoviesAndOpinions(imdbID);
-    setTitle(re[0].opinion_title);
-    setDesc(re[0].opinion_desc);
-    setRate(re[0].opinion_rate);
+    try{
+      const re = await loadMoviesAndOpinions(imdbID);
+      setTitle(re[0].opinion_title);
+      setDesc(re[0].opinion_desc);
+      setRate(re[0].opinion_rate);
+    }
+    catch(error){
+      console.error(`listCheck Error: ${error}`);
+    }
   }
   function handleButtonPressed(){
-    const re1 = belowFour.safeParse(Number(rate));
-    const id = imdbID;
-    if(re1.success){
-      if(isOpinion === "1"){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
-        changeOpinion({rate, id, title, desc});
-        alert("Opinion changed");
-        router.back()
-        return;
-      }
-      insertOpinion({rate, id, title, desc}); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
-      alert("Opinion added");
-      router.back()
-    }
-    else{
-      const re2 = textSchema.safeParse(title);
-      const re3 = textSchema.safeParse(desc);
-      if(re2.success && re3.success){ //weryfikacja czy title i desc są przynajmniej długości 1 znaku
+    try{
+      const re1 = belowFour.safeParse(Number(rate));
+      const id = imdbID;
+      if(re1.success){
         if(isOpinion === "1"){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
           changeOpinion({rate, id, title, desc});
           alert("Opinion changed");
           router.back()
           return;
-      }
+        }
         insertOpinion({rate, id, title, desc}); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
         alert("Opinion added");
         router.back()
-        return;
       }
-      alert(re1.error.issues[0].message);
+      else{
+        const re2 = textSchema.safeParse(title);
+        const re3 = textSchema.safeParse(desc);
+        if(re2.success && re3.success){ //weryfikacja czy title i desc są przynajmniej długości 1 znaku
+          if(isOpinion === "1"){ //sprawdzanie na podstawie boola z details czy opinia już istnieje
+            changeOpinion({rate, id, title, desc});
+            alert("Opinion changed");
+            router.back()
+            return;
+        }
+          insertOpinion({rate, id, title, desc}); //jeśli nie ma jeszcze opinii to zostanie wykonane dodanie jej
+          alert("Opinion added");
+          router.back()
+          return;
+        }
+        alert(re1.error.issues[0].message);
+      }
+    }
+    catch(error){
+      console.error(`handleButtonPressed Error: ${error}`);
     }
   }
   function handleNumberChange(r: string){

@@ -23,6 +23,7 @@ export default function List(){
     useEffect(() =>{
         const f = async () =>{
             const movies = await loadMovies();
+            if(!movies) return;
             console.log(movies);
             if(w === 0 || watched){
                 setdBase(movies);
@@ -39,11 +40,17 @@ export default function List(){
     const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
 
     async function renderMovie(id: string, apiKey: string) {
-    const res = await fetch(
-        `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
-    );
-    if (!res.ok) throw new Error("Failed to fetch movie");
-    return res.json();
+        try{
+            const res = await fetch(
+                `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
+            );
+            if (!res.ok) throw new Error("Failed to fetch movie");
+            return res.json();
+        }
+        catch(error){
+            console.error(error);
+        }
+
     }
     const movieQueries = useQueries({
         queries: dBase.map((row) => ({

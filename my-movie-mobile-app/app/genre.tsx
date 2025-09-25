@@ -8,17 +8,23 @@ export default function Genre(){
     const { genreId } = useLocalSearchParams<{genreId: string}>();
     const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
 
-    async function Genrefetch(genId: string) {
-        if(!genId) return;
-
-        const response = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
-        const json = await response.json();
-        return json.results || [];
+    async function genreFetch(genId: string) {
+        if (!genId) return [];
+        try{
+            const response = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
+            if(!response.ok) return [];
+            const json = await response.json();
+            return json.results || [];
+        }
+        catch(error){
+            console.error(`genreFetch Error: ${error}`);
+            return [];
+        }
     }
 
     const { data, isLoading, isError, refetch} = useQuery({
         queryKey: ["genre", genreId],
-        queryFn: () => Genrefetch(genreId),
+        queryFn: () => genreFetch(genreId),
         enabled: true,
     });
 
@@ -35,6 +41,6 @@ export default function Genre(){
 const styles = StyleSheet.create({
     view: {
         flex: 1,
-        backgroundColor: "#8856a7",
-  },
+        backgroundColor: "#8856a7"
+    },
 })
