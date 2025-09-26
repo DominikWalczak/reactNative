@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 export default function Credits(){
 
     const {creditId} = useLocalSearchParams<{creditId: string}>()
-    const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
+    const API_KEY = Constants.expoConfig?.extra?.API_KEY ?? "";
 
     async function creditFetch(id: string) {
         if (!id) return;

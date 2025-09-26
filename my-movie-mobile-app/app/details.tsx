@@ -15,7 +15,7 @@ export default function Details() {
   const [x, setX] = useState<number>(0);
 
   const isFocused = useIsFocused();
-  const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string }; //pobierania klucza API
+  const API_KEY = Constants.expoConfig?.extra?.API_KEY ?? ""; //pobierania klucza API
   
   useEffect(() =>{ //weryfikacja bazy danych aby sprawdzać zmiany (usuwanie oraz dodawanie do obejrzenia)
     renderDateBase();

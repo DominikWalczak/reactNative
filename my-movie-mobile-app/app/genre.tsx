@@ -6,7 +6,7 @@ import RenderList from "./RenderList";
 
 export default function Genre(){
     const { genreId } = useLocalSearchParams<{genreId: string}>();
-    const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
+    const API_KEY = Constants.expoConfig?.extra?.API_KEY ?? "";
 
     async function genreFetch(genId: string) {
         if (!genId) return [];

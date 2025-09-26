@@ -37,7 +37,7 @@ export default function List(){
         };
         f();
     }, [w, watched, isFocused]);
-    const { API_KEY } = Constants.expoConfig.extra as { API_KEY: string };
+    const API_KEY = Constants.expoConfig?.extra?.API_KEY ?? "";
 
     async function renderMovie(id: string, apiKey: string) {
         try{

@@ -9,7 +9,7 @@ import RenderList from "../RenderList";
 export default function Index() {
 
   const [result, setResult] = useState("");
-  const { API_KEY } = Constants.expoConfig.extra;
+  const API_KEY = Constants.expoConfig?.extra?.API_KEY ?? "";
 
   async function fetchMovies(search: string){
     if (!search) return [];
