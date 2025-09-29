@@ -1,0 +1,2 @@
+kod działa częściowo, teraz wymieniana jest strona 
++ dodać w useEffect render podczas zmiany page

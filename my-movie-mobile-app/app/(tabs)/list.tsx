@@ -38,17 +38,18 @@ export default function List(){
         f();
     }, [w, watched, isFocused]);
     const API_KEY = Constants.expoConfig?.extra?.API_KEY ?? "";
+    const HTTPS_DIRECTION = Constants.expoConfig?.extra?.HTTPS_DIRECTION ?? "";
 
     async function renderMovie(id: string, apiKey: string) {
         try{
             const res = await fetch(
-                `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
+                `${HTTPS_DIRECTION}movie/${id}?api_key=${apiKey}&language=en-US`
             );
             if (!res.ok) throw new Error("Failed to fetch movie");
             return res.json();
         }
         catch(error){
-            console.error(error);
+            console.error(`renderMovie: ${error}`);
         }
 
     }

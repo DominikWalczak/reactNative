@@ -10,10 +10,11 @@ export interface Movie {
 }
 interface ListProps {
   data: Movie[];
+  loadMore?: () => void;
 }
 
 
-export default function RenderList({ data }: ListProps){ 
+export default function RenderList({ data, loadMore }: ListProps){ 
   // komponent generujący listy na podstawie podanych danych który posiada możliwości przekierowania do details
 
     function handleRedirect(id: string){
@@ -28,6 +29,8 @@ export default function RenderList({ data }: ListProps){
         contentContainerStyle={styles.movie}
         data={data}
         keyExtractor={(item) => item.id.toString()}
+        onEndReached={loadMore}
+        onEndReachedThreshold={5}
         renderItem={({ item }) => (
             <Pressable style={styles.movieItem} onPress={() => handleRedirect(item.id.toString())}>
             <Image style={styles.movieItemImage} source={{uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`}} alt="No image"/>

@@ -8,11 +8,12 @@ export default function Credits(){
 
     const {creditId} = useLocalSearchParams<{creditId: string}>()
     const API_KEY = Constants.expoConfig?.extra?.API_KEY ?? "";
+    const HTTPS_DIRECTION = Constants.expoConfig?.extra?.HTTPS_DIRECTION ?? "";
 
     async function creditFetch(id: string) {
         if (!id) return;
         try{
-            const response = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_cast=${id}`);
+            const response = await fetch(`${HTTPS_DIRECTION}discover/movie?api_key=${API_KEY}&with_cast=${id}`);
             if(!response.ok) return [];
             const json = await response.json();
             return json.results || [];

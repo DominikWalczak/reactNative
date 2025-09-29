@@ -16,6 +16,7 @@ export default function Details() {
 
   const isFocused = useIsFocused();
   const API_KEY = Constants.expoConfig?.extra?.API_KEY ?? ""; //pobierania klucza API
+  const HTTPS_DIRECTION = Constants.expoConfig?.extra?.HTTPS_DIRECTION ?? ""; //pobieranie https strony z API
   
   useEffect(() =>{ //weryfikacja bazy danych aby sprawdzać zmiany (usuwanie oraz dodawanie do obejrzenia)
     renderDateBase();
@@ -29,7 +30,7 @@ export default function Details() {
   async function renderMovie(search: string) {
     if (!search) return;
 
-    const response = await fetch(`https://api.themoviedb.org/3/movie/${search}?api_key=${API_KEY}&language=en-US&append_to_response=credits`);
+    const response = await fetch(`${HTTPS_DIRECTION}movie/${search}?api_key=${API_KEY}&language=en-US&append_to_response=credits`);
     const json = await response.json();
     return json || [];
   }

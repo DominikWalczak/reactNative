@@ -5,24 +5,43 @@ import { useState } from "react";
 import { useQuery } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import RenderList from "../RenderList";
+import { Movie } from "../RenderList";
+
 
 export default function Index() {
 
   const [result, setResult] = useState("");
+  const [page, setPage] = useState(0);
   const API_KEY = Constants.expoConfig?.extra?.API_KEY ?? "";
+  const HTTPS_DIRECTION = Constants.expoConfig?.extra?.HTTPS_DIRECTION ?? "";
 
   async function fetchMovies(search: string){
     if (!search) return [];
     try{
-      const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}&api_key=${API_KEY}`);
-      if(!response.ok) return [];
-      const json = await response.json();
-      return json.results || [];
+      const allMovies: Movie[] = [];
+      for (let p = 1; p <= page; p++){
+        const response = await fetch(`${HTTPS_DIRECTION}search/movie?query=${encodeURIComponent(search)}&api_key=${API_KEY}&page=${p}`);
+        if(!response.ok) return [];
+        const json = await response.json();
+        const newPage = (json.results || []).filter(
+          (movie: Movie) => !allMovies.some(prevMovie => prevMovie.id === movie.id));
+          allMovies.push(...newPage);
+        if(p === page){
+          console.log(p);
+          console.log(allMovies);
+          return allMovies || [];
+        }
+      }
+      
     }
     catch(error){
       console.error(`fetchMovies Error: ${error}`);
       return [];
     }
+  }
+  function loadMoreMovies(){
+    setPage(p => p + 1);
+    refetch()
   }
   function handleResultChange(text: string){
     setResult(text);
@@ -51,7 +70,7 @@ export default function Index() {
       {isLoading && <Text style={{ textAlign: "center", marginTop: 20 }}>Loading...</Text>}
       {isError && <Text style={{ textAlign: "center", marginTop: 20 }}>Error loading data.</Text>}
 
-      <RenderList data={data}/>
+      <RenderList data={data ?? []} loadMore={loadMoreMovies}/>
     </View>
   );
 
