@@ -18,30 +18,30 @@ export default function RenderList({ data, loadMore }: ListProps){
   // komponent generujący listy na podstawie podanych danych który posiada możliwości przekierowania do details
 
     function handleRedirect(id: string){
-    router.push({
-        pathname: "/details",
-        params: { imdbID: id},
+      router.push({
+          pathname: "/details",
+          params: { imdbID: id},
 
-    })
+      })
     }
     return(
-    <FlatList 
-        contentContainerStyle={styles.movie}
-        data={data}
-        keyExtractor={(item) => item.id.toString()}
-        onEndReached={loadMore}
-        onEndReachedThreshold={5}
-        renderItem={({ item }) => (
-            <Pressable style={styles.movieItem} onPress={() => handleRedirect(item.id.toString())}>
-            <Image style={styles.movieItemImage} source={{uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`}} alt="No image"/>
-            <View style={styles.movieItemView}>
-                <Text style={styles.movieItemViewTitle}>Title: {item.title}</Text>
-                <Text style={styles.movieItemViewYear}>Year: {item.release_date}</Text>
-                <Text style={styles.movieItemViewYear}>imdbID: {item.id}</Text>
-            </View>
-            </Pressable>
-        )}
-    />
+      <FlatList 
+          contentContainerStyle={styles.movie}
+          data={data}
+          keyExtractor={(item) => item.id.toString()}
+          onEndReached={loadMore}
+          onEndReachedThreshold={5}
+          renderItem={({ item }) => (
+              <Pressable style={styles.movieItem} onPress={() => handleRedirect(item.id.toString())}>
+              <Image style={styles.movieItemImage} source={{uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`}} alt="No image"/>
+              <View style={styles.movieItemView}>
+                  <Text style={styles.movieItemViewTitle}>Title: {item.title}</Text>
+                  <Text style={styles.movieItemViewYear}>Year: {item.release_date}</Text>
+                  <Text style={styles.movieItemViewYear}>imdbID: {item.id}</Text>
+              </View>
+              </Pressable>
+          )}
+      />
     )
 }
 

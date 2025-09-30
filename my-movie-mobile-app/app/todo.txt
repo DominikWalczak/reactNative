@@ -1,2 +1,2 @@
-kod działa częściowo, teraz wymieniana jest strona 
-+ dodać w useEffect render podczas zmiany page
+funkcja generowania nowych stron działa, 
+teraz trzeba ustawić zabezpieczenie aby nie renderowało dwóch tych samych elementów
