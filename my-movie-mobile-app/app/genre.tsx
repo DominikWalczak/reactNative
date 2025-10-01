@@ -34,6 +34,10 @@ export default function Genre(){
     });
     const movies: Movie[] = data
         ? data.pages.flatMap((page: any) => page.results)
+            .filter(
+                (movie: Movie, index: number, self: Movie[]) =>
+                    index === self.findIndex((m) => m.id === movie.id)
+            )
         : [];
     
     if(!data){

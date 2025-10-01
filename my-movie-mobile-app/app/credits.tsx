@@ -36,8 +36,11 @@ export default function Credits(){
 
     const movies: Movie[] = data
         ? data.pages.flatMap((page: any) => page.results)
+            .filter(
+                (movie: Movie, index: number, self: Movie[]) =>
+                    index === self.findIndex((m) => m.id === movie.id)
+            )
         : [];
-    
     return(
     <View style={styles.view}>
         <RenderList data={movies} loadMore={() => {if (hasNextPage) fetchNextPage();}}/>
